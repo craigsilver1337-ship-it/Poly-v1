@@ -3,7 +3,7 @@
 import { HTMLAttributes, forwardRef } from 'react';
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'success' | 'warning' | 'error' | 'bullish' | 'bearish' | 'live';
+  variant?: 'default' | 'secondary' | 'success' | 'warning' | 'error' | 'bullish' | 'bearish' | 'live';
   size?: 'sm' | 'md';
 }
 
@@ -13,6 +13,7 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
 
     const variants = {
       default: 'bg-border text-text-secondary',
+      secondary: 'bg-surface-elevated text-text-secondary',
       success: 'bg-success/10 text-success',
       warning: 'bg-warning/10 text-warning',
       error: 'bg-bearish/10 text-bearish',

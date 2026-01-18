@@ -19,7 +19,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { BriefCard } from '@/components/research';
-import { Button, Card, Input, Modal, Badge, Tabs } from '@/components/ui';
+import { Button, Card, Input, Modal, Badge, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
 import { useStrategy } from '@/context';
 import { useSavedResearch, SavedResearch } from '@/hooks';
 import { formatRelativeDate, formatPrice } from '@/lib/formatters';
@@ -133,7 +133,7 @@ function SavedResearchCard({
       <div className="flex items-center justify-between pt-3 border-t border-border">
         <div className="flex items-center gap-1 text-xs text-text-secondary">
           <Calendar size={12} />
-          Saved {formatRelativeDate(research.savedAt)}
+          Saved {formatRelativeDate(new Date(research.savedAt))}
         </div>
         <div className="flex gap-2">
           <Button
@@ -208,19 +208,6 @@ export default function ResearchPage() {
     }
   };
 
-  const tabs = [
-    {
-      value: 'saved' as const,
-      label: `Saved Research (${savedResearch.length})`,
-      icon: <Bookmark size={16} />,
-    },
-    {
-      value: 'drafts' as const,
-      label: `Drafts (${drafts.length})`,
-      icon: <FileText size={16} />,
-    },
-  ];
-
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
@@ -236,11 +223,30 @@ export default function ResearchPage() {
 
       {/* Tabs */}
       <div className="mb-6">
-        <Tabs
-          tabs={tabs}
-          value={activeTab}
-          onChange={(v) => setActiveTab(v as TabValue)}
-        />
+        <div className="flex gap-2 border-b border-border">
+          <button
+            onClick={() => setActiveTab('saved')}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'saved'
+                ? 'border-bullish text-bullish'
+                : 'border-transparent text-text-secondary hover:text-text-primary'
+            }`}
+          >
+            <Bookmark size={16} />
+            Saved Research ({savedResearch.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('drafts')}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'drafts'
+                ? 'border-bullish text-bullish'
+                : 'border-transparent text-text-secondary hover:text-text-primary'
+            }`}
+          >
+            <FileText size={16} />
+            Drafts ({drafts.length})
+          </button>
+        </div>
       </div>
 
       {/* Search & Actions */}

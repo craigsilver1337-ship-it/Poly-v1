@@ -357,7 +357,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 
                 {pushNotificationStatus === 'granted' && (
                   <p className="text-xs text-success mt-2">
-                    ✓ Push notifications are enabled. You'll receive alerts when available.
+                    ✓ Push notifications are enabled. You&apos;ll receive alerts when available.
                   </p>
                 )}
                 {pushNotificationStatus === 'denied' && (

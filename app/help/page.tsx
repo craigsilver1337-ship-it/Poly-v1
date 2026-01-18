@@ -61,7 +61,7 @@ export default function HelpPage() {
                   Research Markets
                 </h3>
                 <p className="text-sm text-text-secondary leading-relaxed mb-2">
-                  Click the "Research" button on any market to generate AI-powered analysis with insights, 
+                  Click the &quot;Research&quot; button on any market to generate AI-powered analysis with insights, 
                   key variables, resolution checklists, and debate prompts.
                 </p>
                 <Link href="/research" className="text-bullish hover:underline text-sm font-medium">
@@ -102,7 +102,7 @@ export default function HelpPage() {
                   Scan for Inefficiencies
                 </h3>
                 <p className="text-sm text-text-secondary leading-relaxed mb-2">
-                  Use the "Build Cluster" feature to select related markets, then scan for inefficiencies 
+                  Use the &quot;Build Cluster&quot; feature to select related markets, then scan for inefficiencies 
                   like sum-to-one violations, threshold inconsistencies, and arbitrage opportunities.
                 </p>
                 <p className="text-xs text-text-secondary mt-2">
@@ -162,7 +162,7 @@ export default function HelpPage() {
           <ul className="space-y-3 text-sm text-text-secondary">
             <li className="flex items-start gap-2">
               <span className="text-bullish mt-0.5">•</span>
-              <span>Use the "Trending" filter to find markets with high activity and volume</span>
+              <span>Use the &quot;Trending&quot; filter to find markets with high activity and volume</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-bullish mt-0.5">•</span>

@@ -341,7 +341,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error('[Research] Failed to search news:', error);
       // Continue with empty news results
-      newsResult = { articles: [], query: market.question, totalResults: 0 };
+      newsResult = { articles: [], searchQuery: market.question, totalResults: 0, searchedAt: Date.now() };
     }
 
     // Step 4: Generate AI analysis

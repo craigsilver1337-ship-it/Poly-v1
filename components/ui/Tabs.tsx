@@ -11,18 +11,26 @@ interface TabsContextType {
 const TabsContext = createContext<TabsContextType | null>(null);
 
 interface TabsProps {
-  defaultValue: string;
+  defaultValue?: string;
+  value?: string;
   children: ReactNode;
   className?: string;
   onChange?: (value: string) => void;
+  onValueChange?: (value: string) => void;
 }
 
-function Tabs({ defaultValue, children, className = '', onChange }: TabsProps) {
-  const [activeTab, setActiveTab] = useState(defaultValue);
+function Tabs({ defaultValue, value, children, className = '', onChange, onValueChange }: TabsProps) {
+  const [internalActiveTab, setInternalActiveTab] = useState(defaultValue || value || '');
+  
+  // Support both controlled and uncontrolled modes
+  const activeTab = value !== undefined ? value : internalActiveTab;
 
   const handleChange = (tab: string) => {
-    setActiveTab(tab);
+    if (value === undefined) {
+      setInternalActiveTab(tab);
+    }
     onChange?.(tab);
+    onValueChange?.(tab);
   };
 
   return (

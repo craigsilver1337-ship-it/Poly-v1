@@ -345,7 +345,7 @@ export function ResearchModal({ isOpen, onClose, market }: ResearchModalProps) {
                     <span className={step === 'gathering' ? 'text-bullish' : ''}>Gather</span>
                     <span className={step === 'analyzing' ? 'text-bullish' : ''}>Analyze</span>
                     <span className={step === 'verifying' ? 'text-bullish' : ''}>Verify</span>
-                    <span className={step === 'complete' ? 'text-bullish' : ''}>Done</span>
+                    <span>Done</span>
                   </div>
                 </div>
               )}

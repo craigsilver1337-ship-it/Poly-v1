@@ -2,10 +2,11 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, X, Scan, RefreshCw, AlertCircle, Radio } from 'lucide-react';
+import { Zap, X, Scan, RefreshCw, AlertCircle, Radio, Sparkles } from 'lucide-react';
 import { MarketGrid, MarketSearch, CategoryPills } from '@/components/markets';
 import { ClusterBuilder, ScannerPanel } from '@/components/scanner';
 import { ResearchModal } from '@/components/research';
+import { NaturalLanguageInterface } from '@/components/chat';
 import { Button, Card, Badge, Modal } from '@/components/ui';
 import { useMarkets } from '@/hooks';
 import { useStrategy, useAuth } from '@/context';
@@ -54,6 +55,9 @@ export default function MarketsPage() {
   // Research modal state
   const [showResearchModal, setShowResearchModal] = useState(false);
   const [researchMarket, setResearchMarket] = useState<Market | null>(null);
+  
+  // Chat interface state
+  const [showChat, setShowChat] = useState(false);
 
   // Fetch markets from live Polymarket API
   // When trending is selected, use 'all' category but 'trending' sort
@@ -381,6 +385,31 @@ export default function MarketsPage() {
         }}
         market={researchMarket}
       />
+
+      {/* Floating chat button */}
+      {!showChat && (
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 1, type: 'spring' }}
+          onClick={() => setShowChat(true)}
+          className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
+        >
+          <Sparkles size={24} className="text-white" />
+        </motion.button>
+      )}
+
+      {/* Natural Language Chat Interface */}
+      {showChat && (
+        <div className="fixed bottom-6 right-6 z-50 w-full max-w-md">
+          <NaturalLanguageInterface
+            markets={markets}
+            onMarketSelect={(market) => {
+              handleResearch(market);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

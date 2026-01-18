@@ -11,9 +11,10 @@ interface ModalProps {
   title?: string;
   children: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  closeOnOverlayClick?: boolean;
 }
 
-function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
+function Modal({ isOpen, onClose, title, children, size = 'md', closeOnOverlayClick = true }: ModalProps) {
   const sizes = {
     sm: 'max-w-sm',
     md: 'max-w-lg',
@@ -30,7 +31,7 @@ function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={closeOnOverlayClick ? onClose : undefined}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             style={{ zIndex: 9999 }}
           />

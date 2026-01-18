@@ -61,7 +61,7 @@ export default function PrivacyPage() {
             <p className="text-text-secondary leading-relaxed">
               All user data is currently stored locally in your browser using localStorage. 
               We do not have a backend database storing your personal information. You can clear 
-              your data at any time by clearing your browser's localStorage or using the settings 
+              your data at any time by clearing your browser&apos;s localStorage or using the settings 
               feature in the app.
             </p>
           </section>
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
               PulseForge integrates with the following third-party services:
             </p>
             <ul className="list-disc list-inside space-y-2 text-text-secondary ml-4">
-              <li><strong>Polymarket APIs:</strong> We fetch live market data from Polymarket's public APIs</li>
+              <li><strong>Polymarket APIs:</strong> We fetch live market data from Polymarket&apos;s public APIs</li>
               <li><strong>Google Gemini API:</strong> Used for AI-powered research generation (API keys are server-side only)</li>
               <li><strong>NewsAPI:</strong> Used for fetching relevant news articles for market research</li>
             </ul>
@@ -102,7 +102,7 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-bold text-text-primary mb-3">Changes to This Policy</h2>
             <p className="text-text-secondary leading-relaxed">
               We may update this Privacy Policy from time to time. We will notify you of any changes 
-              by posting the new Privacy Policy on this page and updating the "Last updated" date. 
+              by posting the new Privacy Policy on this page and updating the &quot;Last updated&quot; date. 
               You are advised to review this Privacy Policy periodically for any changes.
             </p>
           </section>

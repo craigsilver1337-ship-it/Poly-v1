@@ -115,7 +115,7 @@ export function ProfileSetupModal({ isOpen, onComplete, initialInterests = [] }:
           </div>
           {selectedInterests.length === 0 && (
             <p className="text-xs text-text-secondary text-center mt-2">
-              Don't worry, you can change this later in your profile
+              Don&apos;t worry, you can change this later in your profile
             </p>
           )}
         </div>

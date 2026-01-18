@@ -61,13 +61,13 @@ export function extractSearchTerms(question: string): string[] {
     .filter(word => word.length > 2 && !stopWords.has(word));
 
   // Get unique terms, prioritize proper nouns and numbers
-  const uniqueTerms = [...new Set(words)];
+  const uniqueTerms = Array.from(new Set(words));
   
   // Also extract any quoted phrases or proper nouns from original
   const properNouns = question.match(/[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*/g) || [];
   const numbers = question.match(/\$?\d+(?:,\d{3})*(?:\.\d+)?[kKmMbB]?/g) || [];
   
-  return [...new Set([...properNouns, ...numbers, ...uniqueTerms])].slice(0, 5);
+  return Array.from(new Set([...properNouns, ...numbers, ...uniqueTerms])).slice(0, 5);
 }
 
 /**

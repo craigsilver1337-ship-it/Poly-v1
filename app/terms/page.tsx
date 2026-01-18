@@ -52,7 +52,7 @@ export default function TermsPage() {
             </h2>
             <p className="text-text-secondary leading-relaxed mb-3">
               <strong className="text-text-primary">IMPORTANT:</strong> PulseForge is a demo research tool and is not financial advice. 
-              This is an experimental analysis platform. The materials on PulseForge are provided on an 'as is' basis. 
+              This is an experimental analysis platform. The materials on PulseForge are provided on an &apos;as is&apos; basis. 
               PulseForge makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, 
               without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or 
               non-infringement of intellectual property or other violation of rights.
@@ -80,7 +80,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-bold text-text-primary mb-3">5. Data and Content</h2>
             <p className="text-text-secondary leading-relaxed">
-              PulseForge uses live data from Polymarket's public APIs. We make no guarantees about the accuracy, 
+              PulseForge uses live data from Polymarket&apos;s public APIs. We make no guarantees about the accuracy, 
               completeness, or timeliness of this data. All market data is provided by third parties and we are not 
               responsible for any errors or omissions in the data.
             </p>

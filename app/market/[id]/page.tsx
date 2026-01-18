@@ -183,7 +183,7 @@ export default function MarketDetailPage() {
               <Badge variant="default">{market.category}</Badge>
               {market.active && !market.closed && <Badge variant="live">LIVE</Badge>}
               {isSaved && (
-                <Badge variant="secondary" className="bg-warning/20 text-warning">
+                <Badge variant="warning" className="bg-warning/20 text-warning">
                   <BookmarkCheck size={12} className="mr-1" />
                   Saved
                 </Badge>

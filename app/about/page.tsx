@@ -61,7 +61,7 @@ export default function AboutPage() {
               <div>
                 <h3 className="font-semibold text-text-primary mb-1">Real-Time Data</h3>
                 <p className="text-sm text-text-secondary">
-                  Access live market data directly from Polymarket's Gamma and CLOB APIs with real-time updates.
+                  Access live market data directly from Polymarket&apos;s Gamma and CLOB APIs with real-time updates.
                 </p>
               </div>
             </Card>
