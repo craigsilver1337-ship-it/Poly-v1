@@ -1,9 +1,9 @@
 /**
- * Gemini API Client for AI-Powered Market Briefs
+ * AI API Client for AI-Powered Market Briefs
+ * Uses OpenRouter for access to multiple AI models
  * Server-side only - never expose API key to client
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import {
   GeminiBriefRequest,
   GeminiBrief,
@@ -15,21 +15,52 @@ import {
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
-const REQUEST_TIMEOUT = 30000;
+const REQUEST_TIMEOUT = 60000;
+
+const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const AI_MODEL = 'google/gemini-2.0-flash-001';
 
 /**
- * Get Gemini client instance
+ * Call OpenRouter API
  */
-function getGeminiClient() {
+async function callOpenRouter(prompt: string): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY not configured');
   }
-  return new GoogleGenerativeAI(apiKey);
+
+  const response = await fetch(OPENROUTER_API_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://pulseforge.app',
+      'X-Title': 'PulseForge',
+    },
+    body: JSON.stringify({
+      model: AI_MODEL,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      max_tokens: 4000,
+      temperature: 0.7,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error?.message || `API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || '';
 }
 
 /**
- * Build the structured prompt for Gemini
+ * Build the structured prompt for AI
  */
 function buildPrompt(request: GeminiBriefRequest): string {
   const { market, priceHistory, scannerFlags, userThesis, userBias } = request;
@@ -96,9 +127,9 @@ Be specific, actionable, and evidence-focused. Do not provide financial advice. 
 }
 
 /**
- * Parse Gemini response into structured brief
+ * Parse AI response into structured brief
  */
-function parseGeminiResponse(
+function parseAIResponse(
   text: string,
   marketId: string,
   startTime: number
@@ -108,6 +139,12 @@ function parseGeminiResponse(
   const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (jsonMatch) {
     jsonText = jsonMatch[1];
+  }
+  
+  // Try to find JSON object in text
+  const jsonObjectMatch = jsonText.match(/\{[\s\S]*\}/);
+  if (jsonObjectMatch) {
+    jsonText = jsonObjectMatch[0];
   }
   
   try {
@@ -149,7 +186,7 @@ function parseGeminiResponse(
           }))
         : [],
       processingTime: Date.now() - startTime,
-      modelVersion: 'gemini-1.5-flash',
+      modelVersion: AI_MODEL,
     };
   } catch {
     // Return a fallback brief if parsing fails
@@ -168,13 +205,13 @@ function parseGeminiResponse(
       confidenceJustification: 'Low confidence due to parsing error',
       sourcesToConsult: [],
       processingTime: Date.now() - startTime,
-      modelVersion: 'gemini-1.5-flash',
+      modelVersion: AI_MODEL,
     };
   }
 }
 
 /**
- * Generate a market brief using Gemini
+ * Generate a market brief using AI
  */
 export async function generateMarketBrief(
   request: GeminiBriefRequest
@@ -187,7 +224,7 @@ export async function generateMarketBrief(
       success: false,
       error: {
         code: 'MISSING_KEY',
-        message: 'Gemini API key not configured. Please set GEMINI_API_KEY in your environment.',
+        message: 'API key not configured. Please set GEMINI_API_KEY in your environment.',
       },
     };
   }
@@ -196,9 +233,6 @@ export async function generateMarketBrief(
   
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
-      const client = getGeminiClient();
-      const model = client.getGenerativeModel({ model: 'gemini-1.5-flash' });
-      
       const prompt = buildPrompt(request);
       
       // Generate with timeout
@@ -206,17 +240,15 @@ export async function generateMarketBrief(
         setTimeout(() => reject(new Error('Request timeout')), REQUEST_TIMEOUT);
       });
       
-      const generatePromise = model.generateContent(prompt);
+      const generatePromise = callOpenRouter(prompt);
       
-      const result = await Promise.race([generatePromise, timeoutPromise]);
-      const response = await result.response;
-      const text = response.text();
+      const text = await Promise.race([generatePromise, timeoutPromise]);
       
       if (!text) {
-        throw new Error('Empty response from Gemini');
+        throw new Error('Empty response from AI');
       }
       
-      const brief = parseGeminiResponse(text, request.market.id, startTime);
+      const brief = parseAIResponse(text, request.market.id, startTime);
       
       return { success: true, brief };
     } catch (error) {
@@ -256,67 +288,5 @@ export async function generateMarketBrief(
       code: 'API_ERROR',
       message: 'Failed to generate brief after multiple attempts',
     },
-  };
-}
-
-/**
- * Generate a mock brief for demo/testing
- */
-export function generateMockBrief(request: GeminiBriefRequest): GeminiBrief {
-  const { market } = request;
-  const currentPrice = market.outcomes[0]?.price || 0.5;
-  
-  return {
-    id: `brief-mock-${Date.now()}`,
-    marketId: market.id,
-    generatedAt: Date.now(),
-    resolutionChecklist: [
-      'Monitor official announcements',
-      'Track key stakeholder statements',
-      'Watch for policy changes',
-      'Follow market sentiment indicators',
-    ],
-    keyVariables: [
-      {
-        name: 'Current Market Sentiment',
-        currentState: currentPrice > 0.5 ? 'Leaning positive' : 'Leaning negative',
-        directionOfImpact: currentPrice > 0.5 ? 'bullish' : 'bearish',
-        importance: 'high',
-      },
-      {
-        name: 'Time to Resolution',
-        currentState: 'Moderate timeframe',
-        directionOfImpact: 'neutral',
-        importance: 'medium',
-      },
-    ],
-    baseCase: `Based on current market pricing at ${(currentPrice * 100).toFixed(0)}%, the market appears to be pricing in a ${currentPrice > 0.5 ? 'likely positive' : 'likely negative'} outcome. Historical patterns suggest continued volatility as resolution approaches.`,
-    bullCase: 'Positive catalysts could drive prices significantly higher if key events align favorably.',
-    bearCase: 'Negative developments could push prices down if risk factors materialize.',
-    whatWouldChangeMyMind: [
-      'Major policy announcement contradicting current trajectory',
-      'Significant shift in key stakeholder positions',
-      'Unexpected external events affecting the outcome',
-    ],
-    debatePrompts: [
-      `Is the current ${(currentPrice * 100).toFixed(0)}% pricing appropriate given recent developments?`,
-      'What risks are the market potentially underpricing?',
-      'How might the resolution timeline affect the final outcome?',
-    ],
-    confidence: 65,
-    confidenceJustification: 'Moderate confidence based on available public information and market signals.',
-    sourcesToConsult: [
-      {
-        type: 'news',
-        description: 'Recent news coverage of related events',
-        searchQuery: market.question.slice(0, 50),
-      },
-      {
-        type: 'official',
-        description: 'Official statements from relevant authorities',
-      },
-    ],
-    processingTime: 150,
-    modelVersion: 'mock',
   };
 }

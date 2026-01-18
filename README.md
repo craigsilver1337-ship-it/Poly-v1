@@ -245,7 +245,7 @@ Nexhack2026/
 │   ├── polymarket/        # API client for Gamma & CLOB APIs
 │   │   ├── client.ts      # Main API client with caching
 │   │   ├── cache.ts       # Cache implementation
-│   │   ├── simulator.ts  # Market simulation
+│   │   ├── websocket.ts   # WebSocket client for live data
 │   │   └── types.ts       # Type definitions
 │   ├── gemini/            # Gemini API client
 │   ├── news/              # NewsAPI client

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { fetchMarkets, clearCache } from '@/lib/polymarket/client';
+import { apiCache, cacheKey } from '@/lib/polymarket/cache';
 
 const searchParamsSchema = z.object({
   query: z.string().optional(),
@@ -34,20 +35,16 @@ export async function GET(request: NextRequest) {
       all: searchParams.get('all') || undefined,
     });
 
-    // Clear cache if refresh requested
+    // Clear cache if refresh requested - ensures fresh data from Polymarket
     if (params.refresh) {
+      // Delete specific cache key for this exact request to force fresh fetch
+      const specificKey = cacheKey('markets', params.query, params.category, params.sortBy, params.sortOrder, params.limit || 50, params.offset || 0, params.all ? 'all' : undefined);
+      apiCache.delete(specificKey);
+      
+      // Also clear all cache to ensure no stale data interferes
       clearCache();
-      console.log('[API] Cache cleared for refresh');
+      console.log('[API] Cache cleared for refresh - will fetch fresh data from Polymarket');
     }
-
-    console.log('[API] Fetching markets with params:', {
-      query: params.query,
-      category: params.category,
-      sortBy: params.sortBy,
-      limit: params.limit || 50,
-      offset: params.offset || 0,
-      all: params.all || false,
-    });
 
     const result = await fetchMarkets({
       query: params.query,

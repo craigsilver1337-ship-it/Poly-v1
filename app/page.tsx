@@ -75,9 +75,9 @@ export default function MarketsPage() {
     setScannerResult,
   } = useStrategy();
 
-  // Handle refresh with cache clear
+  // Handle refresh with cache clear and random offset for new markets
   const handleRefresh = useCallback(() => {
-    refetch(true); // Force refresh
+    refetch(true, true); // Force refresh + use random offset to get new markets
   }, [refetch]);
 
   // Handle research button click

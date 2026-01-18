@@ -1,11 +1,9 @@
 'use client';
 
-import { SedaPost, ResearchDraft } from '@/types';
+import { ResearchDraft } from '@/types';
 import { Card, Badge, Button } from '@/components/ui';
-import { Clock, Copy, Trash2, ExternalLink } from 'lucide-react';
+import { Clock, Trash2, ExternalLink } from 'lucide-react';
 import { formatRelativeDate, truncate } from '@/lib/formatters';
-import { copyToClipboard } from '@/lib/utils';
-import { useToast } from '@/components/ui';
 import Link from 'next/link';
 
 interface BriefCardProps {
@@ -14,16 +12,6 @@ interface BriefCardProps {
 }
 
 export function BriefCard({ draft, onDelete }: BriefCardProps) {
-  const { showToast } = useToast();
-
-  const handleCopy = async () => {
-    if (draft.sedaPost) {
-      const success = await copyToClipboard(draft.sedaPost.formattedContent);
-      if (success) {
-        showToast('success', 'Copied to clipboard!');
-      }
-    }
-  };
 
   return (
     <Card variant="interactive" padding="md">
@@ -44,16 +32,8 @@ export function BriefCard({ draft, onDelete }: BriefCardProps) {
         </div>
         <div className="flex items-center gap-1 flex-shrink-0">
           {draft.brief && <Badge variant="success" size="sm">Brief</Badge>}
-          {draft.sedaPost && <Badge variant="bullish" size="sm">Post</Badge>}
         </div>
       </div>
-
-      {/* Preview */}
-      {draft.sedaPost && (
-        <p className="text-xs text-text-secondary mb-3 line-clamp-2">
-          {truncate(draft.sedaPost.tldr, 120)}
-        </p>
-      )}
 
       {/* Notes */}
       {draft.notes && (
@@ -70,13 +50,6 @@ export function BriefCard({ draft, onDelete }: BriefCardProps) {
             View Market
           </Button>
         </Link>
-        
-        {draft.sedaPost && (
-          <Button variant="secondary" size="sm" onClick={handleCopy}>
-            <Copy size={12} className="mr-1" />
-            Copy
-          </Button>
-        )}
         
         {onDelete && (
           <Button

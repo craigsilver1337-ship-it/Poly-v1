@@ -1,20 +1,15 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   MessageCircle,
-  Twitter,
-  Hash,
   TrendingUp,
   TrendingDown,
   Minus,
   Loader2,
   RefreshCw,
-  ExternalLink,
-  Newspaper,
   AlertCircle,
-  BarChart3,
   Sparkles,
 } from 'lucide-react';
 import { Card, Badge, Button } from '@/components/ui';
@@ -25,114 +20,74 @@ interface SocialSentimentProps {
   className?: string;
 }
 
-interface SentimentData {
-  overall: number; // -100 to +100
-  breakdown: {
-    twitter: { score: number; mentions: number; trending: boolean };
-    reddit: { score: number; mentions: number; subreddits: string[] };
-    news: { score: number; articles: number; sources: string[] };
-  };
-  topMentions: Array<{
-    text: string;
-    source: string;
-    sentiment: 'positive' | 'negative' | 'neutral';
-    timestamp: Date;
-  }>;
-  trend: 'bullish' | 'bearish' | 'neutral';
-  momentum: number; // Change in last 24h
-}
-
-// Generate simulated social sentiment data
-function generateSentimentData(market: Market): SentimentData {
-  const question = market.question.toLowerCase();
-  const yesPrice = market.outcomes[0]?.price || 0.5;
-  
-  // Base sentiment influenced by price
-  let baseSentiment = (yesPrice - 0.5) * 100;
-  
-  // Add some randomness
-  baseSentiment += (Math.random() - 0.5) * 40;
-  
-  // Category-specific adjustments
-  if (question.includes('trump') || question.includes('election')) {
-    // Political topics tend to be more divisive
-    baseSentiment *= 0.8;
-  } else if (question.includes('bitcoin') || question.includes('crypto')) {
-    // Crypto tends to be more bullish on social media
-    baseSentiment += 15;
-  }
-
-  const twitterScore = baseSentiment + (Math.random() - 0.5) * 30;
-  const redditScore = baseSentiment + (Math.random() - 0.5) * 40;
-  const newsScore = baseSentiment + (Math.random() - 0.5) * 20;
-
-  // Generate top mentions
-  const sentimentTypes: Array<'positive' | 'negative' | 'neutral'> = ['positive', 'negative', 'neutral'];
-  const topMentions = [
-    {
-      text: baseSentiment > 20 
-        ? `Looking very likely. The data strongly supports YES at these prices.`
-        : baseSentiment < -20
-        ? `Market seems overconfident. NO looks like better value here.`
-        : `Still too close to call. Waiting for more clarity before betting.`,
-      source: 'twitter',
-      sentiment: (baseSentiment > 20 ? 'positive' : baseSentiment < -20 ? 'negative' : 'neutral') as 'positive' | 'negative' | 'neutral',
-      timestamp: new Date(Date.now() - Math.random() * 3600000),
-    },
-    {
-      text: question.includes('trump')
-        ? `Polling analysis suggests the market may be mispricing this outcome.`
-        : question.includes('bitcoin')
-        ? `Technical indicators and on-chain data point to this being undervalued.`
-        : `Interesting setup here. The risk/reward looks favorable.`,
-      source: 'reddit',
-      sentiment: sentimentTypes[Math.floor(Math.random() * sentimentTypes.length)],
-      timestamp: new Date(Date.now() - Math.random() * 7200000),
-    },
-    {
-      text: `New developments could shift the odds significantly in coming weeks.`,
-      source: 'news',
-      sentiment: 'neutral' as const,
-      timestamp: new Date(Date.now() - Math.random() * 86400000),
-    },
-  ];
-
-  return {
-    overall: Math.round(Math.max(-100, Math.min(100, baseSentiment))),
-    breakdown: {
-      twitter: {
-        score: Math.round(Math.max(-100, Math.min(100, twitterScore))),
-        mentions: Math.floor(100 + Math.random() * 5000),
-        trending: Math.random() > 0.7,
-      },
-      reddit: {
-        score: Math.round(Math.max(-100, Math.min(100, redditScore))),
-        mentions: Math.floor(50 + Math.random() * 500),
-        subreddits: ['r/predictions', 'r/polymarket', question.includes('crypto') ? 'r/cryptocurrency' : 'r/news'].slice(0, 2 + Math.floor(Math.random() * 2)),
-      },
-      news: {
-        score: Math.round(Math.max(-100, Math.min(100, newsScore))),
-        articles: Math.floor(5 + Math.random() * 50),
-        sources: ['Reuters', 'Bloomberg', 'AP News', 'WSJ', 'NYT'].slice(0, 2 + Math.floor(Math.random() * 3)),
-      },
-    },
-    topMentions,
-    trend: baseSentiment > 15 ? 'bullish' : baseSentiment < -15 ? 'bearish' : 'neutral',
-    momentum: Math.round((Math.random() - 0.5) * 40),
-  };
+interface SentimentAnalysis {
+  overall: number;
+  summary: string;
+  keyPoints: string[];
+  sentiment: 'positive' | 'negative' | 'neutral';
+  confidence: number;
 }
 
 export function SocialSentiment({ market, className = '' }: SocialSentimentProps) {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<SentimentData | null>(null);
+  const [data, setData] = useState<SentimentAnalysis | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const loadSentiment = useCallback(async () => {
     setLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setData(generateSentimentData(market));
-    setLoading(false);
+    setError(null);
+
+    try {
+      const resp = await fetch('/api/social-sentiment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          marketId: market.id,
+          marketQuestion: market.question,
+          marketSlug: market.slug,
+          conditionId: market.conditionId,
+        }),
+      });
+
+      if (!resp.ok) {
+        const details = await resp.json().catch(() => null);
+        const message =
+          resp.status === 501
+            ? 'Gemini API not configured. Add GEMINI_API_KEY to .env.local and restart the dev server.'
+            : details?.message || details?.error || 'Failed to analyze sentiment';
+        throw new Error(message);
+      }
+
+      const analysis = await resp.json();
+      
+      if (!analysis.success) {
+        throw new Error(analysis.error || 'Analysis failed');
+      }
+
+      setData({
+        overall: analysis.overall || 0,
+        summary: analysis.summary || '',
+        keyPoints: analysis.keyPoints || [],
+        sentiment: analysis.sentiment || 'neutral',
+        confidence: analysis.confidence || 0,
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Unknown error';
+      setError(msg);
+      setData(null);
+    } finally {
+      setLoading(false);
+    }
   }, [market]);
+
+  useEffect(() => {
+    setData(null);
+    setError(null);
+  }, [market.id]);
+
+  useEffect(() => {
+    void loadSentiment();
+  }, [loadSentiment]);
 
   const sentimentColor = (score: number) => {
     if (score > 30) return 'text-bullish';
@@ -150,12 +105,18 @@ export function SocialSentiment({ market, className = '' }: SocialSentimentProps
     return 'bg-surface-elevated';
   };
 
-  const trendIcon = useMemo(() => {
-    if (!data) return null;
-    if (data.trend === 'bullish') return <TrendingUp size={16} className="text-bullish" />;
-    if (data.trend === 'bearish') return <TrendingDown size={16} className="text-bearish" />;
-    return <Minus size={16} className="text-text-secondary" />;
+  const trend = useMemo(() => {
+    if (!data) return 'neutral';
+    if (data.overall > 15) return 'bullish';
+    if (data.overall < -15) return 'bearish';
+    return 'neutral';
   }, [data]);
+
+  const trendIcon = useMemo(() => {
+    if (trend === 'bullish') return <TrendingUp size={16} className="text-bullish" />;
+    if (trend === 'bearish') return <TrendingDown size={16} className="text-bearish" />;
+    return <Minus size={16} className="text-text-secondary" />;
+  }, [trend]);
 
   return (
     <Card padding="md" className={className}>
@@ -166,9 +127,9 @@ export function SocialSentiment({ market, className = '' }: SocialSentimentProps
         </div>
         <div className="flex-1">
           <h3 className="font-semibold text-text-primary">Social Sentiment</h3>
-          <p className="text-xs text-text-secondary">What people are saying online</p>
+          <p className="text-xs text-text-secondary">AI-powered analysis via Gemini</p>
         </div>
-        {data && (
+        {(data || error) && (
           <Button variant="ghost" size="sm" onClick={loadSentiment} disabled={loading}>
             <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
           </Button>
@@ -176,21 +137,26 @@ export function SocialSentiment({ market, className = '' }: SocialSentimentProps
       </div>
 
       {/* Content */}
-      {!data && !loading ? (
-        <Button
-          variant="primary"
-          onClick={loadSentiment}
-          className="w-full"
-        >
-          <Sparkles size={14} className="mr-2" />
-          Analyze Social Sentiment
-        </Button>
-      ) : loading ? (
+      {loading ? (
         <div className="flex flex-col items-center justify-center py-8">
           <Loader2 className="animate-spin text-text-secondary mb-2" />
-          <p className="text-sm text-text-secondary">Scanning social media...</p>
+          <p className="text-sm text-text-secondary">Analyzing sentiment with Gemini AI...</p>
         </div>
-      ) : data && (
+      ) : error ? (
+        <div className="p-4 bg-bearish/10 border border-bearish/30 rounded-lg">
+          <div className="flex items-start gap-2">
+            <AlertCircle size={16} className="text-bearish flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm text-bearish font-medium">Sentiment analysis failed</p>
+              <p className="text-xs text-text-secondary mt-1">{error}</p>
+              <Button variant="secondary" size="sm" onClick={loadSentiment} className="mt-3">
+                <RefreshCw size={12} className="mr-1" />
+                Retry
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : data ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -203,7 +169,7 @@ export function SocialSentiment({ market, className = '' }: SocialSentimentProps
               <div className="flex items-center gap-2">
                 {trendIcon}
                 <Badge variant="secondary" className={`${sentimentColor(data.overall)} bg-background/50`}>
-                  {data.trend.charAt(0).toUpperCase() + data.trend.slice(1)}
+                  {trend.charAt(0).toUpperCase() + trend.slice(1)}
                 </Badge>
               </div>
             </div>
@@ -230,108 +196,54 @@ export function SocialSentiment({ market, className = '' }: SocialSentimentProps
               </div>
             </div>
 
-            {/* 24h Momentum */}
+            {/* Confidence */}
             <div className="flex items-center gap-2 mt-3 text-sm">
-              <span className="text-text-secondary">24h Change:</span>
-              <span className={data.momentum > 0 ? 'text-bullish' : data.momentum < 0 ? 'text-bearish' : 'text-text-secondary'}>
-                {data.momentum > 0 ? '+' : ''}{data.momentum} points
-              </span>
+              <span className="text-text-secondary">AI Confidence:</span>
+              <span className="text-text-primary">{data.confidence}%</span>
             </div>
           </div>
 
-          {/* Platform Breakdown */}
-          <div className="grid grid-cols-3 gap-2">
-            {/* Twitter */}
-            <div className="bg-surface-elevated rounded-xl p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Twitter size={14} className="text-sky-400" />
-                <span className="text-xs font-medium text-text-primary">Twitter</span>
-              </div>
-              <p className={`text-xl font-bold ${sentimentColor(data.breakdown.twitter.score)}`}>
-                {data.breakdown.twitter.score > 0 ? '+' : ''}{data.breakdown.twitter.score}
-              </p>
-              <p className="text-xs text-text-secondary mt-1">
-                {data.breakdown.twitter.mentions.toLocaleString()} mentions
-              </p>
-              {data.breakdown.twitter.trending && (
-                <Badge variant="default" className="mt-2 text-xs bg-sky-500/20 text-sky-400">
-                  🔥 Trending
-                </Badge>
-              )}
+          {/* Summary */}
+          {data.summary && (
+            <div className="p-3 bg-surface-elevated rounded-lg">
+              <p className="text-sm text-text-primary">{data.summary}</p>
             </div>
+          )}
 
-            {/* Reddit */}
-            <div className="bg-surface-elevated rounded-xl p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Hash size={14} className="text-orange-500" />
-                <span className="text-xs font-medium text-text-primary">Reddit</span>
-              </div>
-              <p className={`text-xl font-bold ${sentimentColor(data.breakdown.reddit.score)}`}>
-                {data.breakdown.reddit.score > 0 ? '+' : ''}{data.breakdown.reddit.score}
-              </p>
-              <p className="text-xs text-text-secondary mt-1">
-                {data.breakdown.reddit.mentions} posts
-              </p>
-              <p className="text-xs text-text-secondary truncate" title={data.breakdown.reddit.subreddits.join(', ')}>
-                {data.breakdown.reddit.subreddits[0]}
-              </p>
-            </div>
-
-            {/* News */}
-            <div className="bg-surface-elevated rounded-xl p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Newspaper size={14} className="text-purple-400" />
-                <span className="text-xs font-medium text-text-primary">News</span>
-              </div>
-              <p className={`text-xl font-bold ${sentimentColor(data.breakdown.news.score)}`}>
-                {data.breakdown.news.score > 0 ? '+' : ''}{data.breakdown.news.score}
-              </p>
-              <p className="text-xs text-text-secondary mt-1">
-                {data.breakdown.news.articles} articles
-              </p>
-              <p className="text-xs text-text-secondary truncate" title={data.breakdown.news.sources.join(', ')}>
-                {data.breakdown.news.sources[0]}
-              </p>
-            </div>
-          </div>
-
-          {/* Top Mentions */}
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-text-primary">Recent Mentions</p>
-            {data.topMentions.map((mention, idx) => (
-              <div key={idx} className="bg-surface-elevated rounded-lg p-3">
-                <div className="flex items-center gap-2 mb-1">
-                  {mention.source === 'twitter' && <Twitter size={12} className="text-sky-400" />}
-                  {mention.source === 'reddit' && <Hash size={12} className="text-orange-500" />}
-                  {mention.source === 'news' && <Newspaper size={12} className="text-purple-400" />}
-                  <span className="text-xs text-text-secondary capitalize">{mention.source}</span>
-                  <Badge 
-                    variant="secondary" 
-                    className={`text-xs ${
-                      mention.sentiment === 'positive' ? 'bg-bullish/20 text-bullish' :
-                      mention.sentiment === 'negative' ? 'bg-bearish/20 text-bearish' :
-                      'bg-surface text-text-secondary'
-                    }`}
-                  >
-                    {mention.sentiment}
-                  </Badge>
+          {/* Key Points */}
+          {data.keyPoints.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-text-primary">Key Insights</p>
+              {data.keyPoints.map((point, idx) => (
+                <div key={idx} className="bg-surface-elevated rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <Sparkles size={12} className="text-bullish flex-shrink-0 mt-1" />
+                    <p className="text-sm text-text-primary">{point}</p>
+                  </div>
                 </div>
-                <p className="text-sm text-text-primary">&quot;{mention.text}&quot;</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
-          {/* Disclaimer */}
+          {/* Footer */}
           <div className="p-3 bg-surface rounded-lg border border-border">
             <div className="flex items-start gap-2">
-              <AlertCircle size={12} className="text-text-secondary flex-shrink-0 mt-0.5" />
+              <Sparkles size={12} className="text-bullish flex-shrink-0 mt-0.5" />
               <p className="text-xs text-text-secondary">
-                Social sentiment is simulated for demonstration. Real data would require API integrations 
-                with Twitter, Reddit, and news services.
+                Analysis powered by Google Gemini AI based on market context and pricing data.
               </p>
             </div>
           </div>
         </motion.div>
+      ) : (
+        <Button
+          variant="primary"
+          onClick={loadSentiment}
+          className="w-full"
+        >
+          <Sparkles size={14} className="mr-2" />
+          Analyze Social Sentiment
+        </Button>
       )}
     </Card>
   );

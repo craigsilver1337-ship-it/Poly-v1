@@ -9,18 +9,16 @@ import { PriceChart } from '@/components/charts';
 import { StrategyBuilder } from '@/components/strategy';
 import { PortfolioSimulator } from '@/components/simulator';
 import { ScannerPanel, ClusterBuilder } from '@/components/scanner';
-import { GeminiBrief, SedaComposer, ResearchModal } from '@/components/research';
+import { GeminiBrief, ResearchModal } from '@/components/research';
 import {
   CrowdWisdom,
-  HistoricalAccuracy,
   CounterArguments,
   ResolutionTracker,
   ConfidenceMeter,
   ELI5Explainer,
   QuickCompare,
-  CorrelationMap,
   SocialSentiment,
-  SmartAlerts,
+  MarketNews,
 } from '@/components/insights';
 import { Button, Card, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Skeleton } from '@/components/ui';
 import { useMarketDetail, useSavedResearch } from '@/hooks';
@@ -32,7 +30,6 @@ import {
   GeminiError,
   MarketCluster,
   ScannerConfig,
-  SedaPost,
   StrategyAnalysis,
 } from '@/types';
 
@@ -53,8 +50,6 @@ export default function MarketDetailPage() {
   // Scanner state
   const [scannerLoading, setScannerLoading] = useState(false);
 
-  // Strategy analysis for Seda composer
-  const [strategyAnalysis, setStrategyAnalysis] = useState<StrategyAnalysis | null>(null);
 
   // Research modal state
   const [showResearchModal, setShowResearchModal] = useState(false);
@@ -133,20 +128,6 @@ export default function MarketDetailPage() {
     [setScannerResult]
   );
 
-  // Handle save Seda post
-  const handleSaveSedaPost = useCallback(
-    (post: SedaPost) => {
-      if (!market) return;
-      saveDraft({
-        marketId: market.id,
-        marketQuestion: market.question,
-        brief: brief || undefined,
-        sedaPost: post,
-        notes: '',
-      });
-    },
-    [market, brief, saveDraft]
-  );
 
   // Loading state
   if (loading) {
@@ -320,18 +301,15 @@ export default function MarketDetailPage() {
         <div className="lg:col-span-1">
           <Tabs defaultValue="strategy">
             <TabsList className="mb-4">
-              <TabsTrigger value="strategy">Strategy</TabsTrigger>
-              <TabsTrigger value="scanner">Scanner</TabsTrigger>
-              <TabsTrigger value="brief">AI Brief</TabsTrigger>
-              <TabsTrigger value="seda">Seda</TabsTrigger>
+              <TabsTrigger value="strategy" className="flex-1 text-center">Strategy</TabsTrigger>
+              <TabsTrigger value="scanner" className="flex-1 text-center">Scanner</TabsTrigger>
+              <TabsTrigger value="brief" className="flex-1 text-center">AI Brief</TabsTrigger>
             </TabsList>
 
             <TabsContent value="strategy">
               <StrategyBuilder
                 market={market}
-                onAddToResearch={(analysis) => {
-                  // Save strategy analysis for Seda composer
-                  setStrategyAnalysis(analysis);
+                onAddToResearch={() => {
                   // Trigger AI research modal to generate research brief
                   setShowResearchModal(true);
                 }}
@@ -362,16 +340,6 @@ export default function MarketDetailPage() {
                 onRetry={generateBrief}
               />
             </TabsContent>
-
-            <TabsContent value="seda">
-              <SedaComposer
-                market={market}
-                brief={brief}
-                scannerResult={scannerResult}
-                strategyAnalysis={strategyAnalysis}
-                onSave={handleSaveSedaPost}
-              />
-            </TabsContent>
           </Tabs>
         </div>
       </div>
@@ -396,31 +364,29 @@ export default function MarketDetailPage() {
           Smart Decision Tools
         </h2>
         
-        {/* Top Row: Alerts + Simulator + ELI5 */}
+        {/* First Row: Portfolio Simulator + ELI5 + Counter Arguments */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-          <SmartAlerts market={market} />
           <PortfolioSimulator market={market} />
           <ELI5Explainer market={market} />
-        </div>
-
-        {/* Second Row: Crowd Wisdom + Historical + Counter Arguments */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-          <CrowdWisdom market={market} priceHistory={priceHistory} />
-          <HistoricalAccuracy market={market} />
           <CounterArguments market={market} />
         </div>
 
-        {/* Third Row: Resolution Tracker + Confidence + Social */}
+        {/* Second Row: Crowd Wisdom + Confidence + Social Sentiment */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-          <ResolutionTracker market={market} />
+          <CrowdWisdom market={market} priceHistory={priceHistory} />
           <ConfidenceMeter market={market} priceHistory={priceHistory} />
           <SocialSentiment market={market} />
         </div>
 
-        {/* Fourth Row: Compare + Correlations */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Third Row: Resolution Tracker + Quick Compare */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <ResolutionTracker market={market} />
           <QuickCompare market={market} />
-          <CorrelationMap market={market} />
+        </div>
+
+        {/* Fourth Row: Market News */}
+        <div className="grid grid-cols-1 gap-4">
+          <MarketNews market={market} />
         </div>
       </motion.div>
 

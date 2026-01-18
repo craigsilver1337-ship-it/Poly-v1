@@ -179,8 +179,7 @@ export default function ResearchPage() {
   // Filter drafts by search query
   const filteredDrafts = drafts.filter(
     (draft) =>
-      draft.marketQuestion.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      draft.sedaPost?.title.toLowerCase().includes(searchQuery.toLowerCase())
+      draft.marketQuestion.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Filter saved research by search query
@@ -217,7 +216,7 @@ export default function ResearchPage() {
     },
     {
       value: 'drafts' as const,
-      label: `Seda Drafts (${drafts.length})`,
+      label: `Drafts (${drafts.length})`,
       icon: <FileText size={16} />,
     },
   ];
@@ -231,7 +230,7 @@ export default function ResearchPage() {
           <h1 className="text-3xl font-bold text-text-primary">Research Hub</h1>
         </div>
         <p className="text-text-secondary">
-          Your saved market research and Seda drafts. Stay informed and make better decisions.
+          Your saved market research and drafts. Stay informed and make better decisions.
         </p>
       </motion.div>
 
@@ -354,12 +353,12 @@ export default function ResearchPage() {
               <Card padding="lg" className="text-center">
                 <FileText size={48} className="mx-auto text-text-secondary mb-4" />
                 <h3 className="text-lg font-semibold text-text-primary mb-2">
-                  {searchQuery ? 'No matching drafts' : 'No Seda drafts saved yet'}
+                  {searchQuery ? 'No matching drafts' : 'No drafts saved yet'}
                 </h3>
                 <p className="text-text-secondary mb-4">
                   {searchQuery
                     ? 'Try a different search term'
-                    : 'Generate AI briefs and compose Seda posts from market pages to see them here.'}
+                    : 'Generate AI briefs from market pages to see them here.'}
                 </p>
                 {!searchQuery && (
                   <Link href="/">

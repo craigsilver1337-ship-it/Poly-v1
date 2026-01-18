@@ -1,0 +1,2 @@
+export { LivePriceIndicator } from './LivePriceIndicator';
+

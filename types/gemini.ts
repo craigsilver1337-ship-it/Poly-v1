@@ -34,7 +34,7 @@ export interface GeminiBrief {
   // What would change the analysis
   whatWouldChangeMyMind: string[];
   
-  // Debate prompts for Seda engagement
+  // Debate prompts for discussion
   debatePrompts: string[];
   
   // Confidence assessment
@@ -73,29 +73,12 @@ export type GeminiResponse =
   | { success: true; brief: GeminiBrief }
   | { success: false; error: GeminiError };
 
-// Seda Post formatting
-export interface SedaPost {
-  id: string;
-  marketId: string;
-  title: string;
-  tldr: string;
-  thesis: string;
-  evidenceChecklist: string[];
-  scannerFlagsSummary: string;
-  strategyTakeaway: string;
-  debatePrompts: string[];
-  tagString: string; // "nexhacks"
-  createdAt: number;
-  formattedContent: string; // Ready-to-copy text
-}
-
 // Saved research drafts
 export interface ResearchDraft {
   id: string;
   marketId: string;
   marketQuestion: string;
   brief?: GeminiBrief;
-  sedaPost?: SedaPost;
   notes: string;
   createdAt: number;
   updatedAt: number;

@@ -39,8 +39,8 @@ function generateTimeline(market: Market): TimelineEvent[] {
   const endDate = new Date(market.endDate);
   const question = market.question.toLowerCase();
   
-  // Add market creation event
-  const createdDate = new Date(now.getTime() - Math.random() * 90 * 24 * 60 * 60 * 1000);
+  // Add market creation event - use actual market creation date
+  const createdDate = market.createdAt ? new Date(market.createdAt) : new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
   events.push({
     id: 'created',
     date: createdDate,

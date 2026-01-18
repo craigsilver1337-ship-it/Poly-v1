@@ -1,12 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { fetchMarketDetail, fetchMarketHistory, getPolymarketUrl } from '@/lib/polymarket/client';
 import { searchNews, formatNewsForPrompt, NewsArticle, NewsSearchResult } from '@/lib/news';
 import { Market, PricePoint } from '@/types';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 30; // Allow up to 30 seconds for AI processing
+export const maxDuration = 60; // Allow up to 60 seconds for AI processing
+
+const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const AI_MODEL = 'google/gemini-2.0-flash-001';
+
+async function callOpenRouter(prompt: string): Promise<string> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY not configured');
+  }
+
+  const response = await fetch(OPENROUTER_API_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://pulseforge.app',
+      'X-Title': 'PulseForge',
+    },
+    body: JSON.stringify({
+      model: AI_MODEL,
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 4000,
+      temperature: 0.7,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error?.message || `API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || '';
+}
 
 const requestSchema = z.object({
   marketId: z.string(),
@@ -183,72 +216,10 @@ function parseGeminiResponse(text: string, market: Market, newsResult: NewsSearc
     };
   } catch (error) {
     console.error('[Research] Failed to parse Gemini response:', error);
-    // Return fallback result
-    return generateFallbackResult(market, newsResult);
+    throw new Error('Failed to parse AI response. Please try again.');
   }
 }
 
-/**
- * Generate fallback result when AI is unavailable
- */
-function generateFallbackResult(market: Market, newsResult?: NewsSearchResult): ResearchResult {
-  const yesPrice = market.outcomes[0]?.price || 0.5;
-  const daysToEnd = Math.max(0, Math.ceil((new Date(market.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
-  
-  // Build sources including news
-  const sources = [
-    { name: 'Polymarket Live Data', type: 'market', url: getPolymarketUrl(market) },
-    { name: 'Price History', type: 'analysis' },
-  ];
-  
-  if (newsResult) {
-    newsResult.articles.slice(0, 3).forEach(article => {
-      sources.push({ name: article.source, type: 'news', url: article.url });
-    });
-  }
-  
-  return {
-    summary: `This market asks "${market.question}" and is currently priced at ${(yesPrice * 100).toFixed(0)}% YES. The market has $${(market.volume || 0).toLocaleString()} in trading volume.`,
-    whatIsThisBet: `You're betting on whether "${market.question}" will happen. If you buy YES and it happens, you win. If you buy NO and it doesn't happen, you win.`,
-    keyPoints: [
-      `Current market price: ${(yesPrice * 100).toFixed(0)}% chance of YES`,
-      `Trading volume: $${(market.volume || 0).toLocaleString()}`,
-      `Resolution in ${daysToEnd} days`,
-      `Category: ${market.category}`,
-    ],
-    riskLevel: yesPrice > 0.8 || yesPrice < 0.2 ? 'high' : yesPrice > 0.65 || yesPrice < 0.35 ? 'medium' : 'low',
-    riskExplanation: yesPrice > 0.8 || yesPrice < 0.2 
-      ? 'Extreme odds mean limited upside potential and higher risk of unexpected outcomes'
-      : 'Moderate odds suggest reasonable uncertainty in the outcome',
-    confidence: 60,
-    confidenceExplanation: 'Based on market data analysis without AI enhancement',
-    sources,
-    prosAndCons: {
-      pros: [
-        market.volume > 50000 ? 'High liquidity - easy to enter and exit positions' : 'Growing market interest',
-        'Clear resolution criteria',
-        'Active trading indicates market efficiency',
-      ],
-      cons: [
-        'Prediction markets carry inherent risk',
-        'External events could shift odds rapidly',
-        'Past performance doesn\'t guarantee future results',
-      ],
-    },
-    keyDates: [
-      `Resolution date: ${new Date(market.endDate).toLocaleDateString()}`,
-    ],
-    marketSentiment: `The market currently favors ${yesPrice > 0.5 ? 'YES' : 'NO'} at ${(Math.max(yesPrice, 1 - yesPrice) * 100).toFixed(0)}%`,
-    recommendation: 'Always do your own research and never bet more than you can afford to lose. Consider the time value of money and opportunity cost.',
-    beginnerExplanation: `People are betting on whether "${market.question}" - currently ${(yesPrice * 100).toFixed(0)}% think it will happen.`,
-    newsArticles: newsResult?.articles || [],
-    newsSummary: newsResult && newsResult.articles.length > 0 
-      ? `Found ${newsResult.articles.length} real news source${newsResult.articles.length !== 1 ? 's' : ''} with clickable links.`
-      : process.env.NEWS_API_KEY 
-        ? 'No recent news articles found for this topic.'
-        : 'News API key not configured. Add NEWS_API_KEY to environment variables to get real news sources.',
-  };
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -374,29 +345,36 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 4: Generate AI analysis
-    let result: ResearchResult;
-
     const apiKey = process.env.GEMINI_API_KEY;
-    if (apiKey) {
-      try {
-        console.log('[Research] Generating AI analysis with Gemini...');
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    if (!apiKey) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: 'GEMINI_API_KEY not configured. Please add it to your .env.local file.',
+          message: 'AI analysis requires Gemini API key'
+        },
+        { status: 501 }
+      );
+    }
 
-        const prompt = buildResearchPrompt(market, priceHistory, newsResult);
-        const genResult = await model.generateContent(prompt);
-        const response = await genResult.response;
-        const text = response.text();
+    let result: ResearchResult;
+    try {
+      console.log('[Research] Generating AI analysis via OpenRouter...');
+      const prompt = buildResearchPrompt(market, priceHistory, newsResult);
+      const text = await callOpenRouter(prompt);
 
-        result = parseGeminiResponse(text, market, newsResult);
-        console.log('[Research] AI analysis complete');
-      } catch (aiError) {
-        console.error('[Research] AI analysis failed:', aiError);
-        result = generateFallbackResult(market, newsResult);
-      }
-    } else {
-      console.log('[Research] No API key, using fallback analysis');
-      result = generateFallbackResult(market, newsResult);
+      result = parseGeminiResponse(text, market, newsResult);
+      console.log('[Research] AI analysis complete');
+    } catch (aiError) {
+      console.error('[Research] AI analysis failed:', aiError);
+      return NextResponse.json(
+        { 
+          success: false,
+          error: 'AI analysis failed. Please try again.',
+          message: aiError instanceof Error ? aiError.message : 'Unknown error'
+        },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({

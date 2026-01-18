@@ -32,10 +32,14 @@ export function SplashScreen() {
   }, []);
 
   return (
-    <AnimatePresence>
+    // Avoid a "blank/black screen" on first paint: Framer Motion `initial` values
+    // are rendered as inline styles during SSR (e.g. `opacity: 0`). If hydration is
+    // slow or fails, users may see an empty dark page. Disabling initial animations
+    // ensures the splash content is visible immediately.
+    <AnimatePresence initial={false}>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 1 }}
+          initial={false}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
           className="fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden"
@@ -120,7 +124,7 @@ export function SplashScreen() {
 
           {/* Main content */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={false}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: -15 }}
             transition={{ 
@@ -131,7 +135,7 @@ export function SplashScreen() {
           >
             {/* Enhanced Logo with multiple animation layers */}
             <motion.div
-              initial={{ rotate: -180, scale: 0 }}
+              initial={false}
               animate={{ rotate: 0, scale: 1 }}
               transition={{ 
                 duration: 1.3,
@@ -254,7 +258,7 @@ export function SplashScreen() {
 
             {/* App name with smaller, refined typography */}
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
               className="text-center space-y-2"
@@ -276,7 +280,7 @@ export function SplashScreen() {
                 PulseForge
               </motion.h1>
               <motion.p
-                initial={{ opacity: 0 }}
+                initial={false}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.9 }}
                 className="text-xs sm:text-sm text-text-secondary font-medium tracking-wide"
@@ -287,7 +291,7 @@ export function SplashScreen() {
 
             {/* Enhanced loading indicator with progress */}
             <motion.div
-              initial={{ opacity: 0, width: 0 }}
+              initial={false}
               animate={{ opacity: 1, width: 240 }}
               transition={{ duration: 0.8, delay: 1 }}
               className="flex flex-col items-center gap-3 mt-1"
@@ -324,7 +328,7 @@ export function SplashScreen() {
 
             {/* Enhanced icon showcase with better animations */}
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.3 }}
               className="flex items-center gap-4 mt-2"
@@ -336,7 +340,7 @@ export function SplashScreen() {
               ].map(({ Icon, label }, i) => (
                 <motion.div
                   key={i}
-                  initial={{ scale: 0, rotate: -180, opacity: 0 }}
+                  initial={false}
                   animate={{ scale: 1, rotate: 0, opacity: 1 }}
                   transition={{
                     duration: 0.7,

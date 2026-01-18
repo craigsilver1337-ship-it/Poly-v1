@@ -182,7 +182,9 @@ export function AuthScreen({ onComplete }: AuthScreenProps) {
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        // Prevent SSR from rendering the entire auth UI as invisible (opacity: 0),
+        // which can look like a black screen if hydration is slow/fails.
+        initial={false}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="w-full max-w-md relative z-10"
@@ -190,7 +192,7 @@ export function AuthScreen({ onComplete }: AuthScreenProps) {
         {/* Enhanced Logo and Branding with Animations */}
         <div className="text-center mb-10">
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
+            initial={false}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ 
               type: 'spring', 
@@ -311,7 +313,7 @@ export function AuthScreen({ onComplete }: AuthScreenProps) {
           </motion.div>
           
           <motion.h1
-            initial={{ opacity: 0, y: 10 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
             className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-bullish via-bullish-hover to-bullish bg-clip-text text-transparent mb-3 tracking-tight"
@@ -319,7 +321,7 @@ export function AuthScreen({ onComplete }: AuthScreenProps) {
             PulseForge
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0 }}
+            initial={false}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.5 }}
             className="text-sm text-text-secondary font-medium"
@@ -330,7 +332,7 @@ export function AuthScreen({ onComplete }: AuthScreenProps) {
 
         {/* Enhanced Auth Card */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
           className="bg-surface/80 backdrop-blur-xl border border-border/50 rounded-3xl shadow-2xl p-6 sm:p-8 relative overflow-hidden"

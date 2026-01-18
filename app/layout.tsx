@@ -21,6 +21,12 @@ export const metadata: Metadata = {
     'ai',
     'analysis',
   ],
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-icon.svg',
+  },
 };
 
 export default function RootLayout({

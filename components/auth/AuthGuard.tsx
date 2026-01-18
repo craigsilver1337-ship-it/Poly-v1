@@ -66,19 +66,15 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const handleAuthComplete = () => {
     // Update state to hide auth screen immediately
     setShowAuth(false);
-    
-    // Force a hard reload to ensure all state is refreshed
-    // This ensures localStorage is properly read by all components
-    if (typeof window !== 'undefined') {
-      // Use a small delay to ensure localStorage write is complete
-      setTimeout(() => {
-        window.location.reload();
-      }, 50);
-    }
   };
 
   if (isChecking || isLoading) {
-    return null; // Loading state
+    // Never return a blank screen during auth checks; that reads like "app is broken".
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-text-secondary">
+        Loading…
+      </div>
+    );
   }
 
   // Show auth screen only on home page if not authenticated

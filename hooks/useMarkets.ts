@@ -13,7 +13,7 @@ interface UseMarketsReturn {
   error: string | null;
   hasMore: boolean;
   total: number;
-  refetch: (forceRefresh?: boolean) => void;
+  refetch: (forceRefresh?: boolean, useRandomOffset?: boolean) => void;
   loadMore: () => void;
   isLive: boolean;
 }
@@ -49,7 +49,8 @@ export function useMarkets(options: UseMarketsOptions = {}): UseMarketsReturn {
     currentSortOrder: string,
     currentLimit: number,
     resetOffset: boolean,
-    forceRefresh: boolean
+    forceRefresh: boolean,
+    customOffset?: number
   ) => {
     if (!enabled) return;
 
@@ -59,7 +60,7 @@ export function useMarkets(options: UseMarketsOptions = {}): UseMarketsReturn {
       setLoading(true);
       setError(null);
 
-      const currentOffset = resetOffset ? 0 : offsetRef.current;
+      const currentOffset = customOffset !== undefined ? customOffset : (resetOffset ? 0 : offsetRef.current);
       const params = new URLSearchParams();
       if (currentQuery) params.set('query', currentQuery);
       if (currentCategory && currentCategory !== 'all') params.set('category', currentCategory);
@@ -80,7 +81,34 @@ export function useMarkets(options: UseMarketsOptions = {}): UseMarketsReturn {
 
       console.log('[useMarkets] Fetching:', `/api/markets?${params.toString()}`);
 
-      const response = await fetch(`/api/markets?${params.toString()}`);
+      let response: Response;
+      try {
+        // Create timeout manually for better browser compatibility
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+        try {
+          response = await fetch(`/api/markets?${params.toString()}`, {
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
+        } catch (fetchErr) {
+          clearTimeout(timeoutId);
+          throw fetchErr;
+        }
+      } catch (fetchError) {
+        // Handle network errors (CORS, connection refused, timeout, etc.)
+        if (fetchError instanceof TypeError) {
+          if (fetchError.message.includes('fetch') || fetchError.message.includes('network')) {
+            throw new Error('Network error: Unable to reach API server. Check your internet connection and ensure the dev server is running on port 3000.');
+          }
+          throw new Error(`Network error: ${fetchError.message}`);
+        }
+        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+          throw new Error('Request timeout: The API took longer than 30 seconds to respond. The Polymarket API may be slow or unavailable.');
+        }
+        throw new Error(fetchError instanceof Error ? fetchError.message : 'Network request failed. Please check your connection.');
+      }
       
       // Check if this is still the latest request
       if (fetchId !== fetchIdRef.current) {
@@ -90,7 +118,8 @@ export function useMarkets(options: UseMarketsOptions = {}): UseMarketsReturn {
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `API returned ${response.status}`);
+        const errorMsg = errorData.message || errorData.error || `API returned ${response.status} ${response.statusText}`;
+        throw new Error(errorMsg);
       }
 
       const data: MarketSearchResponse = await response.json();
@@ -108,9 +137,10 @@ export function useMarkets(options: UseMarketsOptions = {}): UseMarketsReturn {
         return;
       }
 
-      if (resetOffset) {
+      // If customOffset is provided, always replace markets (for random refresh)
+      if (resetOffset || customOffset !== undefined) {
         setMarkets(data.markets);
-        setOffset(data.markets.length);
+        setOffset(customOffset !== undefined ? customOffset + data.markets.length : data.markets.length);
       } else {
         setMarkets(prev => [...prev, ...data.markets]);
         setOffset(prev => prev + data.markets.length);
@@ -138,9 +168,18 @@ export function useMarkets(options: UseMarketsOptions = {}): UseMarketsReturn {
     fetchMarkets(query, category, sortBy, sortOrder, limit, true, false);
   }, [fetchMarkets, query, category, sortBy, sortOrder, limit]);
 
-  const refetch = useCallback((forceRefresh = false) => {
-    fetchMarkets(query, category, sortBy, sortOrder, limit, true, forceRefresh);
-  }, [fetchMarkets, query, category, sortBy, sortOrder, limit]);
+  const refetch = useCallback((forceRefresh = false, useRandomOffset = false) => {
+    if (useRandomOffset && total > 0) {
+      // Generate a random offset to fetch new markets from a different position
+      const maxOffset = Math.max(0, total - limit);
+      const randomOffset = Math.floor(Math.random() * (maxOffset + 1));
+      
+      // Fetch with random offset (customOffset will cause markets to be replaced)
+      fetchMarkets(query, category, sortBy, sortOrder, limit, false, forceRefresh, randomOffset);
+    } else {
+      fetchMarkets(query, category, sortBy, sortOrder, limit, true, forceRefresh);
+    }
+  }, [fetchMarkets, query, category, sortBy, sortOrder, limit, total]);
 
   const loadMore = useCallback(() => {
     if (!loading && hasMore) {

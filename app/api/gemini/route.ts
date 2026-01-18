@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { generateMarketBrief, generateMockBrief } from '@/lib/gemini/client';
+import { generateMarketBrief } from '@/lib/gemini/client';
 import { GeminiBriefRequest } from '@/types';
 
 const requestSchema = z.object({
@@ -26,19 +26,20 @@ const requestSchema = z.object({
   scannerFlags: z.array(z.any()).optional(),
   userThesis: z.string().optional(),
   userBias: z.enum(['bullish', 'bearish', 'neutral']).optional(),
-  useMock: z.boolean().optional().default(false),
 });
 
 export async function POST(request: NextRequest) {
   try {
+    // Check for API key first
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json(
+        { success: false, error: { code: 'MISSING_KEY', message: 'GEMINI_API_KEY not configured. Please add it to your .env.local file.' } },
+        { status: 501 }
+      );
+    }
+
     const body = await request.json();
     const parsed = requestSchema.parse(body);
-
-    // Use mock if requested or if API key is missing
-    if (parsed.useMock || !process.env.GEMINI_API_KEY) {
-      const brief = generateMockBrief(parsed as unknown as GeminiBriefRequest);
-      return NextResponse.json({ success: true, brief });
-    }
 
     const result = await generateMarketBrief(parsed as unknown as GeminiBriefRequest);
 
