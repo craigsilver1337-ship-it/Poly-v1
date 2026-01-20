@@ -61,13 +61,13 @@ export function Sparkline({
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      
+
       {/* Area fill */}
       <path
         d={`${path} L ${width - 2},${height - 2} L 2,${height - 2} Z`}
         fill={`url(#sparkline-gradient-${isUp})`}
       />
-      
+
       {/* Line */}
       <path
         d={path}

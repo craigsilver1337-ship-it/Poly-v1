@@ -68,12 +68,12 @@ export function useMarkets(options: UseMarketsOptions = {}): UseMarketsReturn {
       params.set('sortOrder', currentSortOrder);
       params.set('limit', currentLimit.toString());
       params.set('offset', currentOffset.toString());
-      
+
       // Opt-in to fetch all markets when no query is active
       if (all && !currentQuery && (!currentCategory || currentCategory === 'all')) {
         params.set('all', 'true');
       }
-      
+
       // Force cache refresh
       if (forceRefresh) {
         params.set('refresh', 'true');
@@ -85,7 +85,7 @@ export function useMarkets(options: UseMarketsOptions = {}): UseMarketsReturn {
       try {
         // Create timeout manually for better browser compatibility
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
 
         try {
           response = await fetch(`/api/markets?${params.toString()}`, {
@@ -105,17 +105,17 @@ export function useMarkets(options: UseMarketsOptions = {}): UseMarketsReturn {
           throw new Error(`Network error: ${fetchError.message}`);
         }
         if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-          throw new Error('Request timeout: The API took longer than 30 seconds to respond. The Polymarket API may be slow or unavailable.');
+          throw new Error('Request timeout: The API took longer than 60 seconds to respond. The Polymarket API may be slow or unavailable.');
         }
         throw new Error(fetchError instanceof Error ? fetchError.message : 'Network request failed. Please check your connection.');
       }
-      
+
       // Check if this is still the latest request
       if (fetchId !== fetchIdRef.current) {
         console.log('[useMarkets] Request superseded, ignoring');
         return;
       }
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         const errorMsg = errorData.message || errorData.error || `API returned ${response.status} ${response.statusText}`;
@@ -145,13 +145,13 @@ export function useMarkets(options: UseMarketsOptions = {}): UseMarketsReturn {
         setMarkets(prev => [...prev, ...data.markets]);
         setOffset(prev => prev + data.markets.length);
       }
-      
+
       setTotal(data.total);
       setHasMore(data.hasMore);
       setIsLive(true);
     } catch (err) {
       if (fetchId !== fetchIdRef.current) return;
-      
+
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       console.error('[useMarkets] Error:', errorMessage);
       setError(`Failed to fetch from Polymarket: ${errorMessage}`);
@@ -173,7 +173,7 @@ export function useMarkets(options: UseMarketsOptions = {}): UseMarketsReturn {
       // Generate a random offset to fetch new markets from a different position
       const maxOffset = Math.max(0, total - limit);
       const randomOffset = Math.floor(Math.random() * (maxOffset + 1));
-      
+
       // Fetch with random offset (customOffset will cause markets to be replaced)
       fetchMarkets(query, category, sortBy, sortOrder, limit, false, forceRefresh, randomOffset);
     } else {

@@ -31,7 +31,7 @@ import {
 // Polymarket API endpoints
 const GAMMA_API_URL = process.env.POLYMARKET_GAMMA_URL || 'https://gamma-api.polymarket.com';
 const CLOB_API_URL = process.env.POLYMARKET_CLOB_URL || 'https://clob.polymarket.com';
-const REQUEST_TIMEOUT = 10000; // 10 seconds (reduced from 15)
+const REQUEST_TIMEOUT = 30000; // 30 seconds
 
 // Response metadata for instrumentation
 export interface FetchMeta {
@@ -205,23 +205,23 @@ function transformGammaMarket(
 
   if (category === 'other') {
     if (questionLower.includes('bitcoin') || questionLower.includes('crypto') ||
-        questionLower.includes('eth') || questionLower.includes('btc') ||
-        titleLower.includes('bitcoin') || titleLower.includes('crypto')) {
+      questionLower.includes('eth') || questionLower.includes('btc') ||
+      titleLower.includes('bitcoin') || titleLower.includes('crypto')) {
       category = 'crypto';
     } else if (questionLower.includes('trump') || questionLower.includes('election') ||
-               questionLower.includes('president') || questionLower.includes('congress') ||
-               questionLower.includes('senate') || questionLower.includes('governor')) {
+      questionLower.includes('president') || questionLower.includes('congress') ||
+      questionLower.includes('senate') || questionLower.includes('governor')) {
       category = 'politics';
     } else if (questionLower.includes('nba') || questionLower.includes('nfl') ||
-               questionLower.includes('mlb') || questionLower.includes('soccer') ||
-               questionLower.includes('super bowl') || questionLower.includes('championship')) {
+      questionLower.includes('mlb') || questionLower.includes('soccer') ||
+      questionLower.includes('super bowl') || questionLower.includes('championship')) {
       category = 'sports';
     } else if (questionLower.includes('gdp') || questionLower.includes('inflation') ||
-               questionLower.includes('fed') || questionLower.includes('interest rate') ||
-               questionLower.includes('recession')) {
+      questionLower.includes('fed') || questionLower.includes('interest rate') ||
+      questionLower.includes('recession')) {
       category = 'economy';
     } else if (questionLower.includes('war') || questionLower.includes('ukraine') ||
-               questionLower.includes('russia') || questionLower.includes('nato')) {
+      questionLower.includes('russia') || questionLower.includes('nato')) {
       category = 'world';
     }
   }
@@ -282,30 +282,30 @@ function calculateTrendingScore(market: Market): number {
   const priceChange = Math.abs(market.outcomes[0]?.priceChange24h || 0);
   const volatility = priceChange; // Use absolute price change as volatility proxy
   const volume24hr = market.volume24hr || 0;
-  
+
   // Recency score (more recent = higher score)
   const now = Date.now();
   const updatedAt = new Date(market.updatedAt || market.createdAt || 0).getTime();
   const hoursSinceUpdate = (now - updatedAt) / (1000 * 60 * 60);
   const recencyScore = Math.max(0, 1 - hoursSinceUpdate / 168); // Decay over 1 week
-  
+
   // Normalize and combine factors
   // Volume: 0-1 (normalized by max expected volume of 1M)
   const volumeScore = Math.min(1, volume / 1000000);
-  
+
   // Price change: 0-1 (normalized by max expected change of 0.5 = 50%)
   const changeScore = Math.min(1, priceChange / 0.5);
-  
+
   // Volume 24h: 0-1 (normalized by max expected 24h volume of 100k)
   const volume24hrScore = Math.min(1, volume24hr / 100000);
-  
+
   // Combined trending score (weighted)
-  const trendingScore = 
+  const trendingScore =
     (volumeScore * 0.3) +           // 30% volume
     (changeScore * 0.3) +           // 30% price movement
     (volume24hrScore * 0.2) +       // 20% recent volume
     (recencyScore * 0.2);            // 20% recency
-  
+
   return trendingScore;
 }
 
@@ -320,7 +320,7 @@ function mapSortToGamma(sortBy: string, sortOrder: string): { sortBy: string; so
     volatility: 'oneDayPriceChange',
     trending: 'volume', // Trending uses volume as base, then client-side sorting
   };
-  
+
   return {
     sortBy: sortMap[sortBy] || 'volume',
     sortDirection: sortOrder === 'asc' ? 'asc' : 'desc',
@@ -375,7 +375,7 @@ async function fetchMarketsFromGamma(params: MarketSearchParams): Promise<{
     }
 
     const url = `${GAMMA_API_URL}/markets?${gammaParams.toString()}`;
-    
+
     if (pagesFetched === 0) {
       console.log(`[Polymarket] Fetching markets: ${url}`);
     } else {
@@ -447,7 +447,7 @@ async function fetchMarketsFromGamma(params: MarketSearchParams): Promise<{
   // This ensures correct sort order even after client-side filtering
   markets.sort((a, b) => {
     let comparison = 0;
-    
+
     switch (sortBy) {
       case 'trending':
         // Trending: combination of volume, price change, and recency
@@ -481,7 +481,7 @@ async function fetchMarketsFromGamma(params: MarketSearchParams): Promise<{
         // Default to volume
         comparison = (a.volume || 0) - (b.volume || 0);
     }
-    
+
     // Apply sort order (desc means largest first, asc means smallest first)
     return sortOrder === 'desc' ? -comparison : comparison;
   });
@@ -494,8 +494,8 @@ async function fetchMarketsFromGamma(params: MarketSearchParams): Promise<{
   const estimatedTotal = needsCategoryFilter
     ? Math.max(markets.length, 100) // For category filters, use actual count found
     : allRawMarkets.length >= pageLimit
-    ? Math.max(currentOffset + pageLimit, 500) // Estimate if more might exist
-    : markets.length; // Exact count if we got all
+      ? Math.max(currentOffset + pageLimit, 500) // Estimate if more might exist
+      : markets.length; // Exact count if we got all
 
   if (needsCategoryFilter) {
     console.log(`[Polymarket] Category filter "${category}" found ${markets.length} matches after fetching ${pagesFetched} page(s)`);
@@ -541,8 +541,8 @@ async function fetchAllMarketsCountFromGamma(): Promise<number> {
       typeof data?.count === 'number'
         ? data.count
         : typeof data?.total === 'number'
-        ? data.total
-        : undefined;
+          ? data.total
+          : undefined;
     if (responseCount !== undefined) {
       return responseCount;
     }
@@ -727,7 +727,7 @@ export async function fetchMarketDetail(id: string): Promise<Market | null> {
       }
 
       const gamma: GammaMarketRaw = await response.json();
-      
+
       // Use EXACT same transformation logic as list view (transformGammaMarket)
       // This ensures categories, slugs, outcomes, and all fields match exactly
       // No event-specific overrides that could cause differences
