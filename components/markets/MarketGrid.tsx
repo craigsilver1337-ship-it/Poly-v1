@@ -1,8 +1,9 @@
 'use client';
 
 import { Market } from '@/types';
-import { MarketCard } from './MarketCard';
+import { FuturisticMarketCard } from './FuturisticMarketCard';
 import { MarketCardSkeleton } from '@/components/ui';
+import { formatCompactNumber, formatRelativeDate } from '@/lib/formatters';
 
 interface MarketGridProps {
   markets: Market[];
@@ -44,18 +45,38 @@ export function MarketGrid({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {markets.map((market, index) => (
-        <MarketCard
-          key={market.id}
-          market={market}
-          sparklineData={sparklineData[market.id] || []}
-          onAddToCluster={onAddToCluster}
-          onResearch={onResearch}
-          showAddButton={showAddButtons}
-          isInCluster={selectedMarketIds.has(market.id)}
-          index={index}
-        />
-      ))}
+      {markets.map((market, index) => {
+        const yesOutcome = market.outcomes[0];
+        const yesPrice = yesOutcome?.price || 0;
+        const priceChange = yesOutcome?.priceChange24h || 0;
+
+        // Prepare props matching the user's interface
+        const outcomeYesPercent = parseFloat((yesPrice * 100).toFixed(1));
+        const priceChange24h = parseFloat((priceChange * 100).toFixed(1));
+        const volumeStr = `$${formatCompactNumber(market.volume)}`;
+        const endDateStr = formatRelativeDate(market.endDate).replace(/^In /, 'Ends in ');
+        const isLive = market.active && !market.closed;
+
+        // Map sparkline data (number[]) to Recharts data ({ value: number }[])
+        const historyData = (sparklineData[market.id] || []).map(val => ({ value: val }));
+
+        return (
+          <div key={market.id} onClick={() => onAddToCluster && onAddToCluster(market)}>
+            <FuturisticMarketCard
+              id={market.id}
+              title={market.question}
+              image={market.imageUrl || '/placeholder-market.jpg'}
+              outcomeYesPercent={outcomeYesPercent}
+              priceChange24h={priceChange24h}
+              volume={volumeStr}
+              endDate={endDateStr}
+              isLive={isLive}
+              PriceHistory={historyData}
+              onResearch={() => onResearch?.(market)}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

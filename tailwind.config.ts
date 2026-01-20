@@ -28,7 +28,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['Inter', 'Geist Sans', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        mono: ['Geist Mono', 'JetBrains Mono', 'Fira Code', 'monospace'],
       },
       animation: {
         'pulse-live': 'pulse-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
