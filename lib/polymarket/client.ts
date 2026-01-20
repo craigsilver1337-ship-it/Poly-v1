@@ -31,7 +31,7 @@ import {
 // Polymarket API endpoints
 const GAMMA_API_URL = process.env.POLYMARKET_GAMMA_URL || 'https://gamma-api.polymarket.com';
 const CLOB_API_URL = process.env.POLYMARKET_CLOB_URL || 'https://clob.polymarket.com';
-const REQUEST_TIMEOUT = 30000; // 30 seconds
+const REQUEST_TIMEOUT = 15000; // 15 seconds
 
 // Response metadata for instrumentation
 export interface FetchMeta {
@@ -349,80 +349,43 @@ async function fetchMarketsFromGamma(params: MarketSearchParams): Promise<{
   const needsCategoryFilter = !!categoryLower;
 
   // When filtering by category, we need to fetch more pages to find matches
-  // Since category filtering is client-side, we fetch multiple pages until we have enough
-  const pageLimit = 100; // Gamma API max per page
-  const maxPages = needsCategoryFilter ? 10 : 1; // Fetch up to 10 pages (1000 markets) when filtering
-  let allRawMarkets: GammaMarketRaw[] = [];
-  let currentOffset = offset;
-  let pagesFetched = 0;
+  // Parallelize page fetching to avoid sequential timeout issues
+  const pageLimit = 100;
+  const pagesToFetch = needsCategoryFilter ? 5 : 1;
 
-  // Fetch pages until we have enough results or hit max pages
-  while (pagesFetched < maxPages) {
+  const pageOffsets = Array.from({ length: pagesToFetch }, (_, i) => offset + i * pageLimit);
+
+  console.log(`[Polymarket] Fetching ${pagesToFetch} pages in parallel for ${needsCategoryFilter ? 'category: ' + category : 'listing'}`);
+
+  const pageResults = await Promise.all(pageOffsets.map(async (pageOffset, index) => {
     const gammaParams = new URLSearchParams();
     gammaParams.set('active', 'true');
     gammaParams.set('closed', 'false');
     gammaParams.set('limit', String(pageLimit));
-    gammaParams.set('offset', String(currentOffset));
+    gammaParams.set('offset', String(pageOffset));
 
-    // Apply sorting
     const { sortBy: gammaSortBy, sortDirection } = mapSortToGamma(sortBy, sortOrder);
     gammaParams.set('sortBy', gammaSortBy);
     gammaParams.set('sortDirection', sortDirection);
 
-    // Apply search query if present
     if (query && query.trim()) {
       gammaParams.set('_q', query.trim());
     }
 
     const url = `${GAMMA_API_URL}/markets?${gammaParams.toString()}`;
 
-    if (pagesFetched === 0) {
-      console.log(`[Polymarket] Fetching markets: ${url}`);
-    } else {
-      console.log(`[Polymarket] Fetching page ${pagesFetched + 1} for category filter (offset: ${currentOffset})`);
+    try {
+      const response = await fetchWithTimeout(url, {}, 1); // Reduced retries for parallel
+      if (!response.ok) return [];
+      const data = await response.json();
+      return Array.isArray(data) ? data : (data.data || data.results || []);
+    } catch (err) {
+      console.warn(`[Polymarket] Failed to fetch page at offset ${pageOffset}:`, err);
+      return [];
     }
+  }));
 
-    const response = await fetchWithTimeout(url);
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error');
-      throw new Error(`Gamma API returned ${response.status}: ${errorText}`);
-    }
-
-    const data = await response.json();
-    const rawMarkets: GammaMarketRaw[] = Array.isArray(data) ? data : (data.data || data.results || []);
-
-    if (rawMarkets.length === 0) {
-      break; // No more markets
-    }
-
-    allRawMarkets.push(...rawMarkets);
-    pagesFetched++;
-
-    // If not filtering by category, we only need one page
-    if (!needsCategoryFilter) {
-      break;
-    }
-
-    // Transform and check if we have enough matches
-    const transformed = allRawMarkets
-      .filter(m => m.id && m.active && !m.closed)
-      .map(m => transformGammaMarket(m));
-
-    const filtered = transformed.filter(m => m.category === categoryLower);
-
-    // If we have enough filtered results, stop fetching
-    if (filtered.length >= limit + offset) {
-      break;
-    }
-
-    // If we got fewer than pageLimit, we've reached the end
-    if (rawMarkets.length < pageLimit) {
-      break;
-    }
-
-    currentOffset += pageLimit;
-  }
+  let allRawMarkets: GammaMarketRaw[] = pageResults.flat();
 
   // Transform all fetched markets
   let markets = allRawMarkets
@@ -494,11 +457,11 @@ async function fetchMarketsFromGamma(params: MarketSearchParams): Promise<{
   const estimatedTotal = needsCategoryFilter
     ? Math.max(markets.length, 100) // For category filters, use actual count found
     : allRawMarkets.length >= pageLimit
-      ? Math.max(currentOffset + pageLimit, 500) // Estimate if more might exist
+      ? Math.max(offset + (pagesToFetch * pageLimit), 500) // Estimate if more might exist
       : markets.length; // Exact count if we got all
 
   if (needsCategoryFilter) {
-    console.log(`[Polymarket] Category filter "${category}" found ${markets.length} matches after fetching ${pagesFetched} page(s)`);
+    console.log(`[Polymarket] Category filter "${category}" found ${markets.length} matches after fetching ${pagesToFetch} page(s)`);
   }
 
   return {
@@ -518,7 +481,11 @@ async function fetchAllMarketsCountFromGamma(): Promise<number> {
   let totalCount = 0;
   let hasMore = true;
 
-  while (hasMore) {
+  let pagesFetched = 0;
+  const maxPages = 5; // Cap count crawl to 5 pages (500 markets) for performance
+
+  while (hasMore && pagesFetched < maxPages) {
+    pagesFetched++;
     const gammaParams = new URLSearchParams();
     gammaParams.set('active', 'true');
     gammaParams.set('closed', 'false');

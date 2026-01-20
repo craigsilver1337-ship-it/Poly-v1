@@ -7,8 +7,10 @@ import { BarChart3, Zap, TrendingUp, Activity, Sparkles } from 'lucide-react';
 export function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // Hide splash screen after 5 seconds
     const timer = setTimeout(() => {
       setIsVisible(false);
@@ -87,14 +89,14 @@ export function SplashScreen() {
 
           {/* Enhanced floating particles with trails */}
           <div className="absolute inset-0 overflow-hidden">
-            {[...Array(25)].map((_, i) => {
+            {mounted && [...Array(25)].map((_, i) => {
               const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
               const screenHeight = typeof window !== 'undefined' ? window.innerHeight : 1080;
               const delay = Math.random() * 2;
               const duration = 5 + Math.random() * 3;
               const startX = Math.random() * screenWidth;
               const startY = Math.random() * screenHeight;
-              
+
               return (
                 <motion.div
                   key={i}
@@ -127,7 +129,7 @@ export function SplashScreen() {
             initial={false}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: -15 }}
-            transition={{ 
+            transition={{
               duration: 0.9,
               ease: [0.22, 1, 0.36, 1]
             }}
@@ -137,7 +139,7 @@ export function SplashScreen() {
             <motion.div
               initial={false}
               animate={{ rotate: 0, scale: 1 }}
-              transition={{ 
+              transition={{
                 duration: 1.3,
                 delay: 0.3,
                 type: 'spring',
@@ -159,7 +161,7 @@ export function SplashScreen() {
                   ease: 'easeInOut',
                 }}
               />
-              
+
               {/* Middle glow ring */}
               <motion.div
                 className="absolute inset-0 -m-6 rounded-3xl bg-bullish/20 blur-2xl -z-10"
@@ -174,7 +176,7 @@ export function SplashScreen() {
                   delay: 0.7,
                 }}
               />
-              
+
               {/* Logo container */}
               <motion.div
                 className="relative w-20 h-20 bg-gradient-to-br from-bullish via-bullish-hover to-bullish rounded-3xl flex items-center justify-center shadow-2xl shadow-bullish/50"
@@ -183,7 +185,7 @@ export function SplashScreen() {
               >
                 {/* Animated icon with subtle movement */}
                 <motion.div
-                  animate={{ 
+                  animate={{
                     rotate: [0, 3, -3, 0],
                     scale: [1, 1.03, 1]
                   }}
@@ -195,7 +197,7 @@ export function SplashScreen() {
                 >
                   <BarChart3 size={44} className="text-white drop-shadow-lg" />
                 </motion.div>
-                
+
                 {/* Inner shine effect */}
                 <motion.div
                   className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/25 via-white/10 to-transparent"
@@ -208,7 +210,7 @@ export function SplashScreen() {
                     ease: 'easeInOut',
                   }}
                 />
-                
+
                 {/* Rotating border glow */}
                 <motion.div
                   className="absolute inset-0 rounded-3xl border-2 border-bullish/40"
@@ -230,9 +232,9 @@ export function SplashScreen() {
                   }}
                 />
               </motion.div>
-              
+
               {/* Enhanced sparkle effects around logo */}
-              {[...Array(10)].map((_, i) => (
+              {mounted && [...Array(10)].map((_, i) => (
                 <motion.div
                   key={i}
                   className="absolute w-2 h-2 bg-bullish rounded-full"

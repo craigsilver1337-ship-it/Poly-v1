@@ -40,7 +40,7 @@ export const FuturisticMarketCard: React.FC<MarketCardProps> = ({
             transition={{ duration: 0.3 }}
         >
             {/* 1. Container & Border Glow */}
-            <div className={`absolute inset-0 bg-gradient-to-r ${isInCluster ? 'from-green-500 via-emerald-400 to-green-500' : 'from-blue-900 via-cyan-500 to-blue-900'} opacity-50 group-hover:opacity-100 transition-opacity duration-300`} />
+            <div className={`absolute inset-0 bg-gradient-to-r ${isInCluster ? 'from-green-500 via-emerald-400 to-green-500' : 'from-blue-900 via-blue-600 to-blue-900'} opacity-50 group-hover:opacity-100 transition-opacity duration-300`} />
 
             {/* Main card container */}
             <div className="relative h-full w-full bg-zinc-950/90 backdrop-blur-md rounded-2xl overflow-hidden flex flex-col">
@@ -65,9 +65,9 @@ export const FuturisticMarketCard: React.FC<MarketCardProps> = ({
                             </div>
                         )}
                         {isLive && (
-                            <div className="flex items-center space-x-1 bg-zinc-950/50 backdrop-blur-sm px-2 py-1 rounded-full border border-cyan-500/20">
-                                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                                <span className="text-[10px] uppercase tracking-wider text-cyan-400 font-mono font-bold">
+                            <div className="flex items-center space-x-1 bg-zinc-950/50 backdrop-blur-sm px-2 py-1 rounded-full border border-blue-600/20">
+                                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                                <span className="text-[10px] uppercase tracking-wider text-blue-500 font-mono font-bold">
                                     Live
                                 </span>
                             </div>
@@ -80,12 +80,12 @@ export const FuturisticMarketCard: React.FC<MarketCardProps> = ({
 
                     {/* 3. Typography & Neon Text */}
                     <div className="space-y-1">
-                        <h3 className="text-lg font-sans font-semibold text-white line-clamp-2 leading-tight group-hover:text-cyan-200 transition-colors">
+                        <h3 className="text-lg font-sans font-semibold text-white line-clamp-2 leading-tight group-hover:text-blue-300 transition-colors">
                             {title}
                         </h3>
 
                         <div className="flex items-end space-x-3">
-                            <span className="text-3xl font-mono font-bold text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,239,0.8)]">
+                            <span className="text-3xl font-mono font-bold text-blue-500 drop-shadow-[0_0_8px_rgba(37,99,235,0.8)]">
                                 {outcomeYesPercent}%
                             </span>
                             <div className={`flex items-center text-xs font-mono mb-1.5 ${priceChange24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
@@ -110,7 +110,7 @@ export const FuturisticMarketCard: React.FC<MarketCardProps> = ({
                                 <Line
                                     type="monotone"
                                     dataKey="value" // Assuming PriceHistory has { value: number } objects
-                                    stroke="#22d3ee" // cyan-400
+                                    stroke="#2563eb" // blue-600 (bullish)
                                     strokeWidth={2}
                                     dot={false}
                                     filter="url(#glow)"
@@ -126,11 +126,11 @@ export const FuturisticMarketCard: React.FC<MarketCardProps> = ({
                         {/* Meta Data */}
                         <div className="flex items-center space-x-4 text-xs text-zinc-400 font-mono">
                             <div className="flex items-center space-x-1">
-                                <BarChart2 className="w-3.5 h-3.5 text-cyan-500/70" />
+                                <BarChart2 className="w-3.5 h-3.5 text-blue-600/70" />
                                 <span>{volume}</span>
                             </div>
                             <div className="flex items-center space-x-1">
-                                <Timer className="w-3.5 h-3.5 text-cyan-500/70" />
+                                <Timer className="w-3.5 h-3.5 text-blue-600/70" />
                                 <span>{endDate}</span>
                             </div>
                         </div>
@@ -142,10 +142,10 @@ export const FuturisticMarketCard: React.FC<MarketCardProps> = ({
                                 e.stopPropagation();
                                 onResearch?.();
                             }}
-                            className="group/btn flex items-center space-x-1 text-sm font-sans font-medium text-white hover:text-cyan-400 transition-colors"
+                            className="group/btn flex items-center space-x-1 text-sm font-sans font-medium text-white hover:text-blue-500 transition-colors"
                         >
                             <span>Research</span>
-                            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1 text-cyan-500" />
+                            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1 text-blue-600" />
                         </button>
 
                     </div>
