@@ -17,6 +17,7 @@ export interface MarketCardProps {
     isLive: boolean;
     PriceHistory: any[]; // Data for Recharts
     onResearch?: () => void;
+    isInCluster?: boolean;
 }
 
 export const FuturisticMarketCard: React.FC<MarketCardProps> = ({
@@ -30,6 +31,7 @@ export const FuturisticMarketCard: React.FC<MarketCardProps> = ({
     isLive,
     PriceHistory,
     onResearch,
+    isInCluster,
 }) => {
     return (
         <motion.div
@@ -38,7 +40,7 @@ export const FuturisticMarketCard: React.FC<MarketCardProps> = ({
             transition={{ duration: 0.3 }}
         >
             {/* 1. Container & Border Glow */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-900 via-cyan-500 to-blue-900 opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className={`absolute inset-0 bg-gradient-to-r ${isInCluster ? 'from-green-500 via-emerald-400 to-green-500' : 'from-blue-900 via-cyan-500 to-blue-900'} opacity-50 group-hover:opacity-100 transition-opacity duration-300`} />
 
             {/* Main card container */}
             <div className="relative h-full w-full bg-zinc-950/90 backdrop-blur-md rounded-2xl overflow-hidden flex flex-col">
@@ -56,14 +58,21 @@ export const FuturisticMarketCard: React.FC<MarketCardProps> = ({
                     <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 to-transparent" />
 
                     {/* Status Badge */}
-                    {isLive && (
-                        <div className="absolute top-3 right-3 flex items-center space-x-1 bg-zinc-950/50 backdrop-blur-sm px-2 py-1 rounded-full border border-cyan-500/20">
-                            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                            <span className="text-[10px] uppercase tracking-wider text-cyan-400 font-mono font-bold">
-                                Live
-                            </span>
-                        </div>
-                    )}
+                    <div className="absolute top-3 right-3 flex items-center gap-2">
+                        {isInCluster && (
+                            <div className="bg-green-500 text-white p-1 rounded-full shadow-lg shadow-green-500/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                        )}
+                        {isLive && (
+                            <div className="flex items-center space-x-1 bg-zinc-950/50 backdrop-blur-sm px-2 py-1 rounded-full border border-cyan-500/20">
+                                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                                <span className="text-[10px] uppercase tracking-wider text-cyan-400 font-mono font-bold">
+                                    Live
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Content Section */}

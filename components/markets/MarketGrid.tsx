@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Market } from '@/types';
 import { FuturisticMarketCard } from './FuturisticMarketCard';
 import { MarketCardSkeleton } from '@/components/ui';
@@ -60,20 +61,40 @@ export function MarketGrid({
         // Map sparkline data (number[]) to Recharts data ({ value: number }[])
         const historyData = (sparklineData[market.id] || []).map(val => ({ value: val }));
 
+        // Shared card component
+        const card = (
+          <FuturisticMarketCard
+            id={market.id}
+            title={market.question}
+            image={market.imageUrl || '/placeholder-market.jpg'}
+            outcomeYesPercent={outcomeYesPercent}
+            priceChange24h={priceChange24h}
+            volume={volumeStr}
+            endDate={endDateStr}
+            isLive={isLive}
+            PriceHistory={historyData}
+            onResearch={() => onResearch?.(market)}
+            isInCluster={selectedMarketIds.has(market.id)}
+          />
+        );
+
         return (
-          <div key={market.id} onClick={() => onAddToCluster && onAddToCluster(market)}>
-            <FuturisticMarketCard
-              id={market.id}
-              title={market.question}
-              image={market.imageUrl || '/placeholder-market.jpg'}
-              outcomeYesPercent={outcomeYesPercent}
-              priceChange24h={priceChange24h}
-              volume={volumeStr}
-              endDate={endDateStr}
-              isLive={isLive}
-              PriceHistory={historyData}
-              onResearch={() => onResearch?.(market)}
-            />
+          <div key={market.id}>
+            {onAddToCluster ? (
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onAddToCluster(market);
+                }}
+              >
+                {card}
+              </div>
+            ) : (
+              <Link href={`/market/${encodeURIComponent(market.id)}`}>
+                {card}
+              </Link>
+            )}
           </div>
         );
       })}
