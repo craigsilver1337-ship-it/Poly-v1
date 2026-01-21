@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Activity, BarChart3, FileText, Menu, Settings, X, Bookmark, LogIn, User, LogOut, UserPlus } from 'lucide-react';
+import { Activity, BarChart3, FileText, Menu, Settings, X, Bookmark, LogIn, User, LogOut, UserPlus, Home } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Badge, SettingsModal, Button } from '@/components/ui';
@@ -29,13 +29,13 @@ export function Header() {
       const guest = localStorage.getItem('pulseforge_guest');
       setIsGuest(!!guest);
     }
-    
+
     // Listen for storage changes (e.g., when signing out)
     const handleStorageChange = () => {
       const guest = localStorage.getItem('pulseforge_guest');
       setIsGuest(!!guest);
     };
-    
+
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
@@ -44,6 +44,7 @@ export function Header() {
   const showAuthButtons = !isAuthenticated && !isGuest;
 
   const navItems = [
+    { href: '/home', label: 'Home', icon: Home },
     { href: '/', label: 'Markets', icon: Activity },
     { href: '/research', label: 'Research', icon: FileText, badge: savedCount > 0 ? savedCount : null },
   ];
@@ -274,8 +275,8 @@ export function Header() {
       <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={authModalOpen} 
+      <AuthModal
+        isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         initialTab={authModalTab}
         onSignUpSuccess={() => {

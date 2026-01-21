@@ -1,12 +1,14 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
+
 import Link from 'next/link';
-import { 
-  ExternalLink, 
-  Github, 
-  Twitter, 
-  Mail, 
-  BarChart3, 
+import {
+  ExternalLink,
+  Github,
+  Twitter,
+  Mail,
+  BarChart3,
   Zap,
   Sparkles,
   TrendingUp
@@ -14,7 +16,10 @@ import {
 import { Badge } from '@/components/ui';
 
 export function Footer() {
+  const pathname = usePathname();
   const currentYear = new Date().getFullYear();
+
+  if (pathname === '/home') return null;
 
   return (
     <footer className="border-t border-border bg-surface/30 backdrop-blur-sm mt-auto">
@@ -32,7 +37,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-xs sm:text-sm text-text-secondary leading-relaxed max-w-xs">
-              Real-time prediction market strategy & research tool. Build multi-market strategies, 
+              Real-time prediction market strategy & research tool. Build multi-market strategies,
               scan for inefficiencies, and generate AI-powered insights.
             </p>
             <div className="flex items-center gap-2 pt-1">

@@ -1,7 +1,7 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  darkMode: 'class', // Enable class-based dark mode
+  darkMode: ['class', 'class'], // Enable class-based dark mode
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -29,10 +29,13 @@ const config: Config = {
       fontFamily: {
         sans: ['Inter', 'Geist Sans', 'system-ui', 'sans-serif'],
         mono: ['Geist Mono', 'JetBrains Mono', 'Fira Code', 'monospace'],
+        geist: ['Geist Sans', 'sans-serif'],
+        'geist-mono': ['Geist Mono', 'monospace'],
       },
       animation: {
         'pulse-live': 'pulse-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'fade-in': 'fade-in 0.3s ease-out',
+        'fade-in': 'fade-in 0.3s ease-out forwards',
+        'fade-up': 'fade-up 0.5s ease-out forwards',
         'slide-up': 'slide-up 0.3s ease-out',
       },
       keyframes: {
@@ -41,8 +44,12 @@ const config: Config = {
           '50%': { opacity: '0.5' },
         },
         'fade-in': {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'fade-up': {
+          '0%': { opacity: '0', transform: 'translateY(40px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         'slide-up': {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
