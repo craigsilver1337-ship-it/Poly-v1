@@ -6,6 +6,7 @@ import {
   motion,
 } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
+import BackgroundParticles from "@/components/visualizations/BackgroundParticles";
 
 interface TimelineEntry {
   title: string;
@@ -34,9 +35,10 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
 
   return (
     <div
-      className="w-full bg-black dark:bg-black font-sans md:px-10"
+      className="relative w-full bg-black dark:bg-black font-sans md:px-10 overflow-hidden"
       ref={containerRef}
     >
+      <BackgroundParticles className="opacity-30" />
       <div className="max-w-7xl mx-auto py-20 px-4 md:px-8 lg:px-10">
         <h2 className="text-2xl md:text-5xl mb-4 text-white dark:text-white max-w-4xl font-black uppercase tracking-tighter">
           The Evolution of <span className="text-bullish">Intelligence</span>

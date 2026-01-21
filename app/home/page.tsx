@@ -1,12 +1,13 @@
 'use client';
 
 import { FullScreenScrollFX } from "@/components/ui/full-screen-scroll-fx";
-import { Activity, Zap, Shield, ChevronRight } from "lucide-react";
+import { Activity, Zap, Shield, ChevronRight, Github, Twitter, Send } from "lucide-react";
 import Link from "next/link";
 import { HeroScrollDemo } from "@/components/ui/hero-scroll-demo";
 import { TimelineDemo } from "@/components/ui/timeline-demo";
 import { motion } from "framer-motion";
 import React, { useRef, useState } from "react";
+import BackgroundParticles from "@/components/visualizations/BackgroundParticles";
 
 const VideoBackground = () => (
     <div className="absolute inset-[-2px] overflow-hidden">
@@ -109,9 +110,9 @@ const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode
 };
 
 const ContentSection = () => (
-    <div className="bg-black text-white pt-0 pb-32 px-4 relative z-10 overflow-hidden">
-
-        <div className="max-w-7xl mx-auto">
+    <div className="relative bg-black text-white pt-0 pb-32 px-4 z-10 overflow-hidden">
+        <BackgroundParticles className="opacity-30" />
+        <div className="relative max-w-7xl mx-auto z-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                 <motion.div
                     initial={{ opacity: 0, x: -50 }}
@@ -135,6 +136,18 @@ const ContentSection = () => (
                         </Link>
                         <Link href="/docs" className="group px-8 py-4 bg-transparent border border-white/10 hover:border-white/30 text-white font-bold rounded-full transition-all uppercase tracking-widest text-sm">
                             <span className="group-hover:text-bullish transition-colors">Read Docs</span>
+                        </Link>
+                    </div>
+
+                    <div className="flex items-center gap-4 mt-8">
+                        <Link href="https://t.me/polypulse" target="_blank" className="group p-3 bg-neutral-900/50 border border-white/10 rounded-full hover:bg-bullish hover:border-bullish text-white transition-all duration-300">
+                            <Send size={20} className="group-hover:scale-110 transition-transform" />
+                        </Link>
+                        <Link href="https://twitter.com/polypulse" target="_blank" className="group p-3 bg-neutral-900/50 border border-white/10 rounded-full hover:bg-bullish hover:border-bullish text-white transition-all duration-300">
+                            <Twitter size={20} className="group-hover:scale-110 transition-transform" />
+                        </Link>
+                        <Link href="https://github.com/polypulse" target="_blank" className="group p-3 bg-neutral-900/50 border border-white/10 rounded-full hover:bg-bullish hover:border-bullish text-white transition-all duration-300">
+                            <Github size={20} className="group-hover:scale-110 transition-transform" />
                         </Link>
                     </div>
                 </motion.div>
