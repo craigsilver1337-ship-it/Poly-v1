@@ -68,7 +68,7 @@ export function ProfileSetupModal({ isOpen, onComplete, initialInterests = [] }:
           >
             <Sparkles size={24} className="text-white" />
           </motion.div>
-          <h2 className="text-2xl font-bold text-text-primary mb-2">Welcome to PulseForge!</h2>
+          <h2 className="text-2xl font-bold text-text-primary mb-2">Welcome to PolyPulse!</h2>
           <p className="text-sm text-text-secondary">
             Select your interests to see personalized market recommendations
           </p>

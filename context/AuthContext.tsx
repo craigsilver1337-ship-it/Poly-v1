@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        const stored = localStorage.getItem('pulseforge_user');
+        const stored = localStorage.getItem('polypulse_user');
         if (stored) {
           const userData = JSON.parse(stored);
           setUser(userData);
@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     setUser(userData);
-    localStorage.setItem('pulseforge_user', JSON.stringify(userData));
+    localStorage.setItem('polypulse_user', JSON.stringify(userData));
   };
 
   const signUp = async (name: string, email: string, password: string) => {
@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     setUser(userData);
-    localStorage.setItem('pulseforge_user', JSON.stringify(userData));
+    localStorage.setItem('polypulse_user', JSON.stringify(userData));
   };
 
   const updateUserInterests = (interests: string[]) => {
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     setUser(updatedUser);
-    localStorage.setItem('pulseforge_user', JSON.stringify(updatedUser));
+    localStorage.setItem('polypulse_user', JSON.stringify(updatedUser));
   };
 
   const updateProfile = (updates: Partial<User>) => {
@@ -97,13 +97,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     setUser(updatedUser);
-    localStorage.setItem('pulseforge_user', JSON.stringify(updatedUser));
+    localStorage.setItem('polypulse_user', JSON.stringify(updatedUser));
   };
 
   const signOut = () => {
     setUser(null);
-    localStorage.removeItem('pulseforge_user');
-    localStorage.removeItem('pulseforge_guest'); // Also clear guest mode
+    localStorage.removeItem('polypulse_user');
+    localStorage.removeItem('polypulse_guest'); // Also clear guest mode
   };
 
   return (

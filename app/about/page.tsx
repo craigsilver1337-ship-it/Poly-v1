@@ -20,7 +20,7 @@ export default function AboutPage() {
               <BarChart3 size={28} className="text-white" />
             </div>
             <h1 className="text-4xl font-extrabold bg-gradient-to-r from-bullish via-bullish-hover to-bullish bg-clip-text text-transparent">
-              PulseForge
+              PolyPulse
             </h1>
           </div>
           <p className="text-lg text-text-secondary">
@@ -32,12 +32,12 @@ export default function AboutPage() {
         <Card padding="lg">
           <h2 className="text-2xl font-bold text-text-primary mb-4">Our Mission</h2>
           <p className="text-text-secondary leading-relaxed mb-4">
-            PulseForge is a comprehensive platform designed to empower prediction market traders and researchers. 
+            PolyPulse is a comprehensive platform designed to empower prediction market traders and researchers. 
             We provide real-time market data analysis, multi-market strategy building, and AI-powered research 
             tools to help users make informed decisions in prediction markets.
           </p>
           <p className="text-text-secondary leading-relaxed">
-            Built with live data from Polymarket, PulseForge offers unique capabilities for detecting market 
+            Built with live data from Polymarket, PolyPulse offers unique capabilities for detecting market 
             inefficiencies, visualizing complex payoff surfaces, and generating evidence-backed market analysis.
           </p>
         </Card>
@@ -129,7 +129,7 @@ export default function AboutPage() {
             <div>
               <h3 className="font-semibold text-text-primary mb-2">Important Disclaimer</h3>
               <p className="text-sm text-text-secondary leading-relaxed">
-                PulseForge is a demo research tool and is not financial advice. This is an experimental analysis platform. 
+                PolyPulse is a demo research tool and is not financial advice. This is an experimental analysis platform. 
                 All predictions are based on market data and AI analysis which may be inaccurate. Do not make financial 
                 decisions based solely on this tool. Always conduct your own research and consult with financial professionals.
               </p>

@@ -88,10 +88,10 @@ export function AuthScreen({ onComplete }: AuthScreenProps) {
     if (typeof window !== 'undefined') {
       try {
         // Set guest mode in localStorage FIRST
-        localStorage.setItem('pulseforge_guest', 'true');
+        localStorage.setItem('polypulse_guest', 'true');
         
         // Immediately verify it was set (localStorage is synchronous)
-        const isGuest = localStorage.getItem('pulseforge_guest') === 'true';
+        const isGuest = localStorage.getItem('polypulse_guest') === 'true';
         
         if (isGuest) {
           // Call onComplete which will trigger AuthGuard's handleAuthComplete
@@ -318,7 +318,7 @@ export function AuthScreen({ onComplete }: AuthScreenProps) {
             transition={{ delay: 0.3, duration: 0.5 }}
             className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-bullish via-bullish-hover to-bullish bg-clip-text text-transparent mb-3 tracking-tight"
           >
-            PulseForge
+            PolyPulse
           </motion.h1>
           <motion.p
             initial={false}
@@ -365,7 +365,7 @@ export function AuthScreen({ onComplete }: AuthScreenProps) {
                 className="text-center mb-6"
               >
                 <h2 className="text-2xl font-bold text-text-primary mb-2">Welcome Back</h2>
-                <p className="text-sm text-text-secondary">Sign in to continue to PulseForge</p>
+                <p className="text-sm text-text-secondary">Sign in to continue to PolyPulse</p>
               </motion.div>
 
               {error && (
@@ -467,7 +467,7 @@ export function AuthScreen({ onComplete }: AuthScreenProps) {
                 className="text-center mb-6"
               >
                 <h2 className="text-2xl font-bold text-text-primary mb-2">Create Account</h2>
-                <p className="text-sm text-text-secondary">Join PulseForge to unlock all features</p>
+                <p className="text-sm text-text-secondary">Join PolyPulse to unlock all features</p>
               </motion.div>
 
               {error && (

@@ -9,7 +9,7 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'PulseForge - Prediction Market Strategy & Research',
+  title: 'PolyPulse - Prediction Market Strategy & Research',
   description:
     'Build multi-market strategies, scan for inefficiencies, and generate AI-powered market briefs for Polymarket.',
   keywords: [

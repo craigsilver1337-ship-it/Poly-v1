@@ -116,7 +116,7 @@ export function AuthModal({ isOpen, onClose, initialTab = 'signin', onSignUpSucc
         <TabsContent value="signin" className="space-y-4">
           <div className="text-center mb-6">
             <h2 className="text-xl font-bold text-text-primary mb-2">Welcome Back</h2>
-            <p className="text-sm text-text-secondary">Sign in to continue to PulseForge</p>
+            <p className="text-sm text-text-secondary">Sign in to continue to PolyPulse</p>
           </div>
 
           {error && (
@@ -193,7 +193,7 @@ export function AuthModal({ isOpen, onClose, initialTab = 'signin', onSignUpSucc
         <TabsContent value="signup" className="space-y-4">
           <div className="text-center mb-6">
             <h2 className="text-xl font-bold text-text-primary mb-2">Create Account</h2>
-            <p className="text-sm text-text-secondary">Join PulseForge to unlock all features</p>
+            <p className="text-sm text-text-secondary">Join PolyPulse to unlock all features</p>
           </div>
 
           {error && (

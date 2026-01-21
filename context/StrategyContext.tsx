@@ -94,7 +94,7 @@ const StrategyContext = createContext<StrategyContextType | null>(null);
 
 export function StrategyProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(strategyReducer, initialState);
-  const [drafts, setDrafts] = useLocalStorage<ResearchDraft[]>('pulseforge-drafts', []);
+  const [drafts, setDrafts] = useLocalStorage<ResearchDraft[]>('polypulse-drafts', []);
 
   const addPosition = useCallback((market: Market, side: 'YES' | 'NO', stake: number) => {
     const entryPrice = side === 'YES'

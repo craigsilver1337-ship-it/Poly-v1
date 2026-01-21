@@ -1,10 +1,10 @@
-# PulseForge
+# PolyPulse
 
 **Real-Time Polymarket Strategy & Research Tool**
 
-PulseForge is a production-ready web application for prediction market traders and researchers. It provides unique capabilities for building multi-market strategies, scanning for market inefficiencies, and generating AI-powered research briefs using **live data from Polymarket**.
+PolyPulse is a production-ready web application for prediction market traders and researchers. It provides unique capabilities for building multi-market strategies, scanning for market inefficiencies, and generating AI-powered research briefs using **live data from Polymarket**.
 
-![PulseForge Screenshot](https://via.placeholder.com/800x400?text=PulseForge+Live+Demo)
+![PolyPulse Screenshot](https://via.placeholder.com/800x400?text=PolyPulse+Live+Demo)
 
 ## 🔴 Live Polymarket Data
 
@@ -127,7 +127,7 @@ POLYMARKET_CLOB_URL=https://clob.polymarket.com
 
 ## 📡 Polymarket API Integration
 
-PulseForge uses the following Polymarket API endpoints:
+PolyPulse uses the following Polymarket API endpoints:
 
 | Feature | API | Endpoint | Docs |
 |---------|-----|----------|------|

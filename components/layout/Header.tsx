@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Activity, BarChart3, FileText, Menu, Settings, X, Bookmark, LogIn, User, LogOut, UserPlus, Home } from 'lucide-react';
+import { Activity, BarChart3, FileText, Menu, Settings, X, Bookmark, LogIn, User, LogOut, UserPlus, Home, BookOpen } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Badge, SettingsModal, Button } from '@/components/ui';
@@ -26,13 +26,13 @@ export function Header() {
   // Check for guest mode
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const guest = localStorage.getItem('pulseforge_guest');
+      const guest = localStorage.getItem('polypulse_guest');
       setIsGuest(!!guest);
     }
 
     // Listen for storage changes (e.g., when signing out)
     const handleStorageChange = () => {
-      const guest = localStorage.getItem('pulseforge_guest');
+      const guest = localStorage.getItem('polypulse_guest');
       setIsGuest(!!guest);
     };
 
@@ -47,6 +47,7 @@ export function Header() {
     { href: '/home', label: 'Home', icon: Home },
     { href: '/', label: 'Markets', icon: Activity },
     { href: '/research', label: 'Research', icon: FileText, badge: savedCount > 0 ? savedCount : null },
+    { href: '/docs', label: 'Docs', icon: BookOpen },
   ];
 
   return (
@@ -59,11 +60,8 @@ export function Header() {
               <BarChart3 size={18} className="text-white" />
             </div>
             <span className="text-lg font-bold text-text-primary group-hover:text-bullish transition-colors">
-              PulseForge
+              PolyPulse
             </span>
-            <Badge variant="live" size="sm" className="hidden sm:flex">
-              LIVE
-            </Badge>
           </Link>
 
           {/* Desktop Navigation */}
@@ -87,7 +85,7 @@ export function Header() {
                     />
                   )}
                   <span className="relative z-10 flex items-center gap-2">
-                    <Icon size={16} />
+                    <Icon size={16} className="text-bullish" />
                     {label}
                     {badge && (
                       <span className="px-1.5 py-0.5 text-xs font-bold bg-bullish text-white rounded-full min-w-[18px] text-center">

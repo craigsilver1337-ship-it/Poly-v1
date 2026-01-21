@@ -28,7 +28,7 @@ export default function PrivacyPage() {
               Data Collection
             </h2>
             <p className="text-text-secondary leading-relaxed mb-3">
-              PulseForge respects your privacy. We collect minimal data necessary to provide our services:
+              PolyPulse respects your privacy. We collect minimal data necessary to provide our services:
             </p>
             <ul className="list-disc list-inside space-y-2 text-text-secondary ml-4">
               <li>Account information (if you choose to sign up): email, name, and selected interests</li>
@@ -72,7 +72,7 @@ export default function PrivacyPage() {
               Third-Party Services
             </h2>
             <p className="text-text-secondary leading-relaxed mb-3">
-              PulseForge integrates with the following third-party services:
+              PolyPulse integrates with the following third-party services:
             </p>
             <ul className="list-disc list-inside space-y-2 text-text-secondary ml-4">
               <li><strong>Polymarket APIs:</strong> We fetch live market data from Polymarket&apos;s public APIs</li>
@@ -111,8 +111,8 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-bold text-text-primary mb-3">Contact Us</h2>
             <p className="text-text-secondary leading-relaxed">
               If you have any questions about this Privacy Policy, please contact us at{' '}
-              <a href="mailto:privacy@pulseforge.com" className="text-bullish hover:underline">
-                privacy@pulseforge.com
+              <a href="mailto:privacy@polypulse.com" className="text-bullish hover:underline">
+                privacy@polypulse.com
               </a>
             </p>
           </section>

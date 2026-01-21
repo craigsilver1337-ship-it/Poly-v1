@@ -18,7 +18,7 @@ export interface SavedResearch {
   notes?: string;
 }
 
-const STORAGE_KEY = 'pulseforge_saved_research';
+const STORAGE_KEY = 'polypulse_saved_research';
 const MAX_SAVED_ITEMS = 50;
 
 /**

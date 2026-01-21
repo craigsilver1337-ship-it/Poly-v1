@@ -21,7 +21,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setMounted(true);
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('pulseforge_theme');
+      const saved = localStorage.getItem('polypulse_theme');
       if (saved === 'light' || saved === 'dark' || saved === 'system') {
         setThemeState(saved);
       } else {
@@ -72,7 +72,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (typeof window === 'undefined') return;
     
     setThemeState(newTheme);
-    localStorage.setItem('pulseforge_theme', newTheme);
+    localStorage.setItem('polypulse_theme', newTheme);
     
     // Immediately update resolved theme and apply to DOM
     let resolved: 'light' | 'dark';

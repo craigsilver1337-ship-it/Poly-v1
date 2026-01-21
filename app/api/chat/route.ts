@@ -24,8 +24,8 @@ async function callOpenRouter(systemPrompt: string, userQuery: string): Promise<
     headers: {
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://pulseforge.app',
-      'X-Title': 'PulseForge',
+      'HTTP-Referer': 'https://polypulse.app',
+      'X-Title': 'PolyPulse',
     },
     body: JSON.stringify({
       model: AI_MODEL,
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       `• "${m.question}" - ${Math.round((m.outcomes?.[0]?.price || 0.5) * 100)}% YES`
     ).join('\n') || 'No specific markets loaded';
 
-    const systemPrompt = `You are PulseForge's AI Market Assistant - a friendly, insightful guide for prediction market traders.
+    const systemPrompt = `You are PolyPulse's AI Market Assistant - a friendly, insightful guide for prediction market traders.
 
 Your personality:
 - Enthusiastic and encouraging, but not over the top

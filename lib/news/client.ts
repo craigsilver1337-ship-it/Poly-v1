@@ -335,7 +335,7 @@ async function fetchFromPerigonAPI(query: string, marketCategory?: string): Prom
     let response = await fetch(`${PERIGON_API_URL}/articles/all?${params}`, {
       headers: {
         'x-api-key': PERIGON_API_KEY,
-        'User-Agent': 'PulseForge/1.0',
+        'User-Agent': 'PolyPulse/1.0',
       },
     });
 
@@ -355,7 +355,7 @@ async function fetchFromPerigonAPI(query: string, marketCategory?: string): Prom
       response = await fetch(`${PERIGON_API_URL}/articles/all?${minimalParams}`, {
         headers: {
           'x-api-key': PERIGON_API_KEY,
-          'User-Agent': 'PulseForge/1.0',
+          'User-Agent': 'PolyPulse/1.0',
         },
       });
     }

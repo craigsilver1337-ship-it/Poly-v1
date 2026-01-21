@@ -21,8 +21,8 @@ async function callOpenRouter(prompt: string): Promise<string> {
     headers: {
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://pulseforge.app',
-      'X-Title': 'PulseForge',
+      'HTTP-Referer': 'https://polypulse.app',
+      'X-Title': 'PolyPulse',
     },
     body: JSON.stringify({
       model: AI_MODEL,

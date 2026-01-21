@@ -14,7 +14,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const getInitialAuthState = () => {
     if (typeof window !== 'undefined') {
       try {
-        const guest = localStorage.getItem('pulseforge_guest');
+        const guest = localStorage.getItem('polypulse_guest');
         const hasGuest = guest === 'true';
         return hasGuest;
       } catch (error) {
@@ -39,7 +39,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     // Check if user is authenticated or in guest mode
     if (typeof window !== 'undefined') {
       try {
-        const guest = localStorage.getItem('pulseforge_guest');
+        const guest = localStorage.getItem('polypulse_guest');
         const hasGuest = guest === 'true';
         
         if (isAuthenticated || hasGuest) {

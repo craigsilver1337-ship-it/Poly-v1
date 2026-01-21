@@ -279,7 +279,7 @@ export function SplashScreen() {
                   backgroundSize: '200% 200%',
                 }}
               >
-                PulseForge
+                PolyPulse
               </motion.h1>
               <motion.p
                 initial={false}

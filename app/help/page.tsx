@@ -18,7 +18,7 @@ export default function HelpPage() {
           <HelpCircle size={48} className="text-bullish mx-auto" />
           <h1 className="text-4xl font-extrabold text-text-primary">How It Works</h1>
           <p className="text-lg text-text-secondary">
-            Get started with PulseForge in minutes
+            Get started with PolyPulse in minutes
           </p>
         </div>
 

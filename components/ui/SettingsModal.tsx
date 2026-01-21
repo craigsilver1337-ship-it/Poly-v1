@@ -32,7 +32,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   // Load saved settings from localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('pulseforge_settings');
+      const saved = localStorage.getItem('polypulse_settings');
       if (saved) {
         try {
           const settings = JSON.parse(saved);
@@ -60,7 +60,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         priceAlerts,
         priceAlertThreshold,
       };
-      localStorage.setItem('pulseforge_settings', JSON.stringify(settings));
+      localStorage.setItem('polypulse_settings', JSON.stringify(settings));
       // Simple notification
       console.log('Settings saved successfully');
     }
@@ -70,7 +70,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const handleClearCache = () => {
     if (typeof window !== 'undefined') {
       clearCache();
-      localStorage.removeItem('pulseforge_cache');
+      localStorage.removeItem('polypulse_cache');
       // Simple notification
       console.log('Cache cleared successfully');
     }
@@ -108,7 +108,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         
         if (result === 'granted') {
           // Show a test notification
-          new Notification('PulseForge', {
+          new Notification('PolyPulse', {
             body: 'Push notifications are now enabled!',
             icon: '/icon-192x192.png',
             badge: '/icon-192x192.png',
@@ -548,7 +548,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             <Card padding="md" className="border-border">
               <div>
                 <h4 className="text-sm font-medium text-text-primary mb-2">Version</h4>
-                <p className="text-xs text-text-secondary">PulseForge v1.0.0</p>
+                <p className="text-xs text-text-secondary">PolyPulse v1.0.0</p>
                 <p className="text-xs text-text-secondary mt-1">Built for NexHacks 2026</p>
               </div>
             </Card>

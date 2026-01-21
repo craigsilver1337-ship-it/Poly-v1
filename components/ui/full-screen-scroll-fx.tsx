@@ -579,7 +579,7 @@ export const FullScreenScrollFX = forwardRef<HTMLDivElement, FullScreenFXProps>(
           }
 
           .fx-fixed-section { height: ${total}00vh; position: relative; }
-          .fx-fixed { position: sticky; top: 0; height: 100vh; width: 100%; overflow: hidden; }
+          .fx-fixed { position: sticky; top: 0; min-height: 100vh; height: 100vh; width: 100%; overflow: hidden; }
 
           .fx-grid {
             display: grid;
@@ -664,7 +664,7 @@ export const FullScreenScrollFX = forwardRef<HTMLDivElement, FullScreenFXProps>(
           }
           .fx-footer-title { color: var(--fx-text); font-size: clamp(1.2rem, 5vw, 3rem); font-weight: 900; letter-spacing: -0.01em; line-height: 1; }
           .fx-progress { width: 220px; height: 2px; margin: 1rem auto 0; background: rgba(255,255,255,0.15); position: relative; }
-          .fx-progress-fill { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--fx-text); height: 100%; transition: width 0.3s ease; }
+          .fx-progress-fill { position: absolute; inset: 0 auto 0 0; width: 0%; background: #2563eb; height: 100%; transition: width 0.3s ease; }
           .fx-progress-numbers { position: absolute; bottom: 100%; left: 0; right: 0; display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--fx-text); padding-bottom: 4px; opacity: 0.7; }
 
           @media (max-width: 1100px) {

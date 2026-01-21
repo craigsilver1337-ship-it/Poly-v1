@@ -33,7 +33,7 @@ export function Footer() {
                 <BarChart3 size={18} className="text-white" />
               </div>
               <span className="text-lg font-bold text-text-primary group-hover:text-bullish transition-colors">
-                PulseForge
+                PolyPulse
               </span>
             </Link>
             <p className="text-xs sm:text-sm text-text-secondary leading-relaxed max-w-xs">
@@ -129,7 +129,7 @@ export function Footer() {
             <ul className="space-y-3 text-xs sm:text-sm text-text-secondary">
               <li>
                 <Link href="/about" className="hover:text-bullish transition-colors block">
-                  About PulseForge
+                  About PolyPulse
                 </Link>
               </li>
               <li>
@@ -153,7 +153,7 @@ export function Footer() {
             {/* Copyright */}
             <div className="text-xs sm:text-sm text-text-secondary">
               <p className="font-medium">
-                © {currentYear} PulseForge · Built for NexHacks 2026
+                © {currentYear} PolyPulse · Built for NexHacks 2026
               </p>
             </div>
 
@@ -178,7 +178,7 @@ export function Footer() {
                 <Twitter size={18} />
               </a>
               <a
-                href="mailto:support@pulseforge.com"
+                href="mailto:support@polypulse.com"
                 className="text-text-secondary hover:text-bullish transition-colors"
                 aria-label="Email"
               >

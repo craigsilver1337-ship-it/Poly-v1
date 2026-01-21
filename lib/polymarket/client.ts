@@ -120,7 +120,7 @@ async function fetchWithTimeout(
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          'User-Agent': 'PulseForge/1.0',
+          'User-Agent': 'PolyPulse/1.0',
           ...options.headers,
         },
       });

@@ -1,6 +1,6 @@
-# Deploying PulseForge to Vercel
+# Deploying PolyPulse to Vercel
 
-This guide will help you deploy PulseForge to Vercel.
+This guide will help you deploy PolyPulse to Vercel.
 
 ## Prerequisites
 
