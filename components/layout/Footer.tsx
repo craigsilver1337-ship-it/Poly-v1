@@ -19,7 +19,6 @@ export function Footer() {
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
 
-  if (pathname === '/home') return null;
 
   return (
     <footer className="border-t border-border bg-surface/30 backdrop-blur-sm mt-auto">

@@ -3,6 +3,10 @@
 import { FullScreenScrollFX } from "@/components/ui/full-screen-scroll-fx";
 import { Activity, Zap, Shield, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { HeroScrollDemo } from "@/components/ui/hero-scroll-demo";
+import { TimelineDemo } from "@/components/ui/timeline-demo";
+import { motion } from "framer-motion";
+import React, { useRef, useState } from "react";
 
 const VideoBackground = () => (
     <div className="absolute inset-[-2px] overflow-hidden">
@@ -50,39 +54,117 @@ const sections = [
     },
 ];
 
+// Spotlight Card Wrapper
+const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => {
+    const divRef = useRef<HTMLDivElement>(null);
+    const [isFocused, setIsFocused] = useState(false);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [opacity, setOpacity] = useState(0);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!divRef.current) return;
+        const div = divRef.current;
+        const rect = div.getBoundingClientRect();
+        setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    };
+
+    const handleFocus = () => {
+        setIsFocused(true);
+        setOpacity(1);
+    };
+
+    const handleBlur = () => {
+        setIsFocused(false);
+        setOpacity(0);
+    };
+
+    const handleMouseEnter = () => {
+        setOpacity(1);
+    };
+
+    const handleMouseLeave = () => {
+        setOpacity(0);
+    };
+
+    return (
+        <div
+            ref={divRef}
+            onMouseMove={handleMouseMove}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className={`relative overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 ${className}`}
+        >
+            <div
+                className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+                style={{
+                    opacity,
+                    background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(37,99,235,0.15), transparent 40%)`,
+                }}
+            />
+            <div className="relative h-full">{children}</div>
+        </div>
+    );
+};
+
 const ContentSection = () => (
-    <div className="bg-black text-white py-32 px-4 relative z-10">
+    <div className="bg-black text-white pt-0 pb-32 px-4 relative z-10 overflow-hidden">
+
         <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                <div>
-                    <h2 className="text-4xl md:text-6xl font-black mb-8 leading-tight tracking-tighter uppercase">
-                        Master the <span className="text-bullish">Market</span> Intelligence
+                <motion.div
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                >
+                    <h2 className="text-5xl md:text-7xl font-black mb-8 leading-[0.9] tracking-tighter uppercase relative">
+                        <span className="block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/50">Master The</span>
+                        <span className="block text-bullish">Market</span>
+                        <span className="block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/50">Intelligence</span>
                     </h2>
-                    <p className="text-xl text-neutral-400 mb-10 leading-relaxed max-w-lg uppercase tracking-wide">
+                    <p className="text-xl text-neutral-400 mb-10 leading-relaxed max-w-lg uppercase tracking-wide border-l-2 border-bullish/50 pl-6">
                         PolyPulse provides deep insights into prediction markets, enabling strategic decision-making through advanced AI-driven analytics.
                     </p>
                     <div className="flex flex-wrap gap-4">
-                        <Link href="/markets" className="px-8 py-4 bg-bullish hover:bg-bullish-hover text-white font-bold rounded-full transition-all uppercase tracking-widest text-sm flex items-center gap-2">
-                            Explore Markets <ChevronRight size={18} />
+                        <Link href="/markets" className="group relative px-8 py-4 bg-bullish hover:bg-bullish-hover text-white font-bold rounded-full transition-all uppercase tracking-widest text-sm flex items-center gap-2 overflow-hidden">
+                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                            <span className="relative">Explore Markets</span>
+                            <ChevronRight size={18} className="relative group-hover:translate-x-1 transition-transform" />
                         </Link>
-                        <Link href="/docs" className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold rounded-full transition-all uppercase tracking-widest text-sm">
-                            Read Docs
+                        <Link href="/docs" className="group px-8 py-4 bg-transparent border border-white/10 hover:border-white/30 text-white font-bold rounded-full transition-all uppercase tracking-widest text-sm">
+                            <span className="group-hover:text-bullish transition-colors">Read Docs</span>
                         </Link>
                     </div>
-                </div>
+                </motion.div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
                         { icon: Activity, title: "Spread Analysis", desc: "Monitor market inefficiencies in real-time with millisecond precision." },
                         { icon: Zap, title: "Instant Execution", desc: "Proprietary signals for optimized entry and exit on Polymarket." },
                         { icon: Shield, title: "Risk Mitigation", desc: "Advanced algorithmic hedging tools to protect your trading capital." },
                         { icon: Zap, title: "AI Strategy", desc: "LLM-powered research briefs generated from live market sentiment." }
                     ].map((feature, i) => (
-                        <div key={i} className="p-8 rounded-3xl bg-neutral-900/50 border border-white/5 hover:border-bullish/30 transition-all duration-500 group">
-                            <feature.icon className="text-bullish mb-4 group-hover:scale-110 transition-transform" size={32} />
-                            <h4 className="text-lg font-bold mb-2 uppercase tracking-tight">{feature.title}</h4>
-                            <p className="text-sm text-neutral-500 leading-relaxed uppercase">{feature.desc}</p>
-                        </div>
+                        <motion.div
+                            key={i}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, delay: i * 0.1 }}
+                        >
+                            <SpotlightCard className="h-full p-8 group hover:bg-neutral-900/80 transition-colors">
+                                <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-6 text-bullish group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                                    <feature.icon size={24} />
+                                </div>
+                                <h4 className="text-xl font-bold mb-3 uppercase tracking-tight text-white group-hover:text-bullish transition-colors">
+                                    {feature.title}
+                                </h4>
+                                <p className="text-sm text-neutral-500 leading-relaxed uppercase group-hover:text-neutral-300 transition-colors">
+                                    {feature.desc}
+                                </p>
+                            </SpotlightCard>
+                        </motion.div>
                     ))}
                 </div>
             </div>
@@ -106,7 +188,9 @@ export default function HomePage() {
                 }}
             />
 
+            <HeroScrollDemo />
             <ContentSection />
+            <TimelineDemo />
         </div>
     );
 }
