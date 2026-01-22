@@ -8,24 +8,43 @@ export function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
   const [progress, setProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [statusText, setStatusText] = useState('Initializing Protocol...');
 
   useEffect(() => {
     setMounted(true);
-    // Hide splash screen after 5 seconds
+    // Hide splash screen after 5.5 seconds
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 5000);
+    }, 5500);
 
-    // Progress animation
+    const statuses = [
+      'Establishing CLOB Pipeline...',
+      'Syncing 1,438 Active Markets...',
+      'Syncing Gamma Liquidity...',
+      'Bootstrapping Solana Core...',
+      'Optimizing Research Agents...',
+      'Neural Engine: Online',
+      'Protocol Ready'
+    ];
+
+    // Progress and status animation
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) {
+        const next = prev + (Math.random() > 0.8 ? 2 : 1);
+        if (next >= 100) {
           clearInterval(progressInterval);
           return 100;
         }
-        return prev + 1;
+
+        // Update status text based on progress
+        const statusIdx = Math.floor((next / 100) * statuses.length);
+        if (statuses[statusIdx]) {
+          setStatusText(statuses[statusIdx]);
+        }
+
+        return next;
       });
-    }, 50); // Update every 50ms for smooth progress
+    }, 45);
 
     return () => {
       clearTimeout(timer);
@@ -34,349 +53,157 @@ export function SplashScreen() {
   }, []);
 
   return (
-    // Avoid a "blank/black screen" on first paint: Framer Motion `initial` values
-    // are rendered as inline styles during SSR (e.g. `opacity: 0`). If hydration is
-    // slow or fails, users may see an empty dark page. Disabling initial animations
-    // ensures the splash content is visible immediately.
     <AnimatePresence initial={false}>
       {isVisible && (
         <motion.div
           initial={false}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden"
+          transition={{ duration: 0.8, ease: 'circOut' }}
+          className="fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden bg-black"
           style={{ zIndex: 99999 }}
         >
-          {/* Enhanced animated gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-background via-surface/50 to-background">
+          {/* Deep Black Background with Radial Blue Glow */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-black" />
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-bullish/8 via-transparent to-bullish/8"
+              className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.12)_0%,transparent_70%)]"
               animate={{
-                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                opacity: [0.5, 0.8, 0.5],
+                scale: [1, 1.1, 1]
               }}
-              transition={{
-                duration: 10,
-                repeat: Infinity,
-                ease: 'linear',
-              }}
-              style={{
-                backgroundSize: '200% 200%',
-              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
 
-          {/* Animated grid pattern */}
-          <div className="absolute inset-0 opacity-[0.08]">
-            <motion.div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `
-                  linear-gradient(to right, var(--bullish) 1px, transparent 1px),
-                  linear-gradient(to bottom, var(--bullish) 1px, transparent 1px)
-                `,
-                backgroundSize: '60px 60px',
-              }}
-              animate={{
-                opacity: [0.05, 0.12, 0.05],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-            />
+          {/* Minimal Grid Layer */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:50px_50px]" />
           </div>
 
-          {/* Enhanced floating particles with trails */}
+          {/* Drifting Stars/Particles */}
           <div className="absolute inset-0 overflow-hidden">
-            {mounted && [...Array(25)].map((_, i) => {
-              const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
-              const screenHeight = typeof window !== 'undefined' ? window.innerHeight : 1080;
-              const delay = Math.random() * 2;
-              const duration = 5 + Math.random() * 3;
-              const startX = Math.random() * screenWidth;
-              const startY = Math.random() * screenHeight;
-
-              return (
-                <motion.div
-                  key={i}
-                  className="absolute w-1.5 h-1.5 bg-bullish/25 rounded-full blur-[1px]"
-                  initial={{
-                    x: startX,
-                    y: startY,
-                    scale: 0,
-                    opacity: 0,
-                  }}
-                  animate={{
-                    x: startX + (Math.random() - 0.5) * 300,
-                    y: startY + (Math.random() - 0.5) * 300,
-                    scale: [0, 1.8, 0],
-                    opacity: [0, 0.7, 0],
-                  }}
-                  transition={{
-                    duration,
-                    repeat: Infinity,
-                    delay,
-                    ease: 'easeInOut',
-                  }}
-                />
-              );
-            })}
+            {mounted && [...Array(30)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-px h-px bg-white rounded-full"
+                initial={{
+                  x: Math.random() * 2000,
+                  y: Math.random() * 1200,
+                  opacity: 0,
+                }}
+                animate={{
+                  opacity: [0, 0.5, 0],
+                  scale: [0, 1.5, 0],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 4,
+                  repeat: Infinity,
+                  delay: Math.random() * 3,
+                }}
+              />
+            ))}
           </div>
 
-          {/* Main content */}
+          {/* Main Content */}
           <motion.div
             initial={false}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: -15 }}
-            transition={{
-              duration: 0.9,
-              ease: [0.22, 1, 0.36, 1]
-            }}
-            className="relative flex flex-col items-center gap-7 z-10"
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ duration: 0.8 }}
+            className="relative flex flex-col items-center gap-10 z-10"
           >
-            {/* Enhanced Logo with multiple animation layers */}
-            <motion.div
-              initial={false}
-              animate={{ rotate: 0, scale: 1 }}
-              transition={{
-                duration: 1.3,
-                delay: 0.3,
-                type: 'spring',
-                stiffness: 180,
-                damping: 12
-              }}
-              className="relative"
-            >
-              {/* Outer glow ring - larger */}
+            {/* Logo Section */}
+            <div className="relative group">
+              {/* Outer Pulsing Glow */}
               <motion.div
-                className="absolute inset-0 -m-8 rounded-3xl bg-bullish/15 blur-3xl -z-10"
-                animate={{
-                  scale: [1, 1.25, 1],
-                  opacity: [0.3, 0.6, 0.3],
-                }}
-                transition={{
-                  duration: 3.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
+                className="absolute inset-0 -m-12 rounded-full bg-bullish/10 blur-[100px] -z-10"
+                animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.5, 0.2] }}
+                transition={{ duration: 4, repeat: Infinity }}
               />
 
-              {/* Middle glow ring */}
+              {/* Central Logo */}
               <motion.div
-                className="absolute inset-0 -m-6 rounded-3xl bg-bullish/20 blur-2xl -z-10"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.4, 0.7, 0.4],
-                }}
-                transition={{
-                  duration: 2.8,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: 0.7,
-                }}
-              />
-
-              {/* Logo container */}
-              <motion.div
-                className="relative w-20 h-20 bg-gradient-to-br from-bullish via-bullish-hover to-bullish rounded-3xl flex items-center justify-center shadow-2xl shadow-bullish/50"
+                className="relative w-24 h-24 bg-gradient-to-br from-bullish via-bullish-hover to-blue-700 rounded-3xl flex items-center justify-center shadow-[0_0_50px_rgba(37,99,235,0.4)] border border-white/10"
                 whileHover={{ scale: 1.05 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               >
-                {/* Animated icon with subtle movement */}
-                <motion.div
-                  animate={{
-                    rotate: [0, 3, -3, 0],
-                    scale: [1, 1.03, 1]
-                  }}
-                  transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                >
-                  <BarChart3 size={44} className="text-white drop-shadow-lg" />
-                </motion.div>
+                <BarChart3 size={48} className="text-white drop-shadow-2xl" />
 
-                {/* Inner shine effect */}
-                <motion.div
-                  className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/25 via-white/10 to-transparent"
-                  animate={{
-                    opacity: [0.3, 0.7, 0.3],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                />
-
-                {/* Rotating border glow */}
-                <motion.div
-                  className="absolute inset-0 rounded-3xl border-2 border-bullish/40"
-                  animate={{
-                    rotate: 360,
-                    opacity: [0.3, 0.6, 0.3],
-                  }}
-                  transition={{
-                    rotate: {
-                      duration: 10,
-                      repeat: Infinity,
-                      ease: 'linear',
-                    },
-                    opacity: {
-                      duration: 2.5,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    },
-                  }}
-                />
-              </motion.div>
-
-              {/* Enhanced sparkle effects around logo */}
-              {mounted && [...Array(10)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-2 h-2 bg-bullish rounded-full"
-                  style={{
-                    top: `${50 + 80 * Math.cos((i * Math.PI * 2) / 10)}%`,
-                    left: `${50 + 80 * Math.sin((i * Math.PI * 2) / 10)}%`,
-                    transform: 'translate(-50%, -50%)',
-                  }}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{
-                    scale: [0, 1.8, 0],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    delay: i * 0.3,
-                    ease: 'easeInOut',
-                  }}
-                />
-              ))}
-            </motion.div>
-
-            {/* App name with smaller, refined typography */}
-            <motion.div
-              initial={false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="text-center space-y-2"
-            >
-              <motion.h1
-                className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-bullish via-bullish-hover to-bullish bg-clip-text text-transparent tracking-tight"
-                animate={{
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                }}
-                transition={{
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
-                style={{
-                  backgroundSize: '200% 200%',
-                }}
-              >
-                PolyPulse
-              </motion.h1>
-              <motion.p
-                initial={false}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.9 }}
-                className="text-xs sm:text-sm text-text-secondary font-medium tracking-wide"
-              >
-                Prediction Market Strategy & Research
-              </motion.p>
-            </motion.div>
-
-            {/* Enhanced loading indicator with progress */}
-            <motion.div
-              initial={false}
-              animate={{ opacity: 1, width: 240 }}
-              transition={{ duration: 0.8, delay: 1 }}
-              className="flex flex-col items-center gap-3 mt-1"
-            >
-              <div className="relative w-full h-1 bg-border/40 rounded-full overflow-hidden backdrop-blur-sm">
-                <motion.div
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-bullish via-bullish-hover to-bullish rounded-full"
-                  initial={{ width: '0%' }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                />
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                  animate={{
-                    x: ['-100%', '100%'],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: 'linear',
-                  }}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                >
-                  <Zap size={16} className="text-bullish" />
-                </motion.div>
-                <span className="text-[10px] sm:text-xs text-text-secondary font-medium">Loading...</span>
-              </div>
-            </motion.div>
-
-            {/* Enhanced icon showcase with better animations */}
-            <motion.div
-              initial={false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.3 }}
-              className="flex items-center gap-4 mt-2"
-            >
-              {[
-                { Icon: TrendingUp, label: 'Trending' },
-                { Icon: Activity, label: 'Live' },
-                { Icon: BarChart3, label: 'Analytics' },
-              ].map(({ Icon, label }, i) => (
-                <motion.div
-                  key={i}
-                  initial={false}
-                  animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                  transition={{
-                    duration: 0.7,
-                    delay: 1.4 + i * 0.2,
-                    type: 'spring',
-                    stiffness: 200,
-                  }}
-                  whileHover={{ scale: 1.15, y: -8 }}
-                  className="flex flex-col items-center gap-2 group"
-                >
+                {/* Orbital dots (requested style from Image 0) */}
+                {[...Array(8)].map((_, i) => (
                   <motion.div
-                    className="p-2.5 bg-surface/70 border border-border/40 rounded-xl backdrop-blur-sm group-hover:bg-bullish/10 group-hover:border-bullish/30 transition-all duration-300"
+                    key={i}
+                    className="absolute w-1.5 h-1.5 bg-bullish rounded-full"
+                    style={{
+                      top: `${50 + 70 * Math.cos((i * Math.PI * 2) / 8)}%`,
+                      left: `${50 + 70 * Math.sin((i * Math.PI * 2) / 8)}%`,
+                    }}
                     animate={{
-                      boxShadow: [
-                        '0 0 0px rgba(34, 197, 94, 0)',
-                        '0 0 8px rgba(34, 197, 94, 0.2)',
-                        '0 0 0px rgba(34, 197, 94, 0)',
-                      ],
+                      scale: [0, 1, 0],
+                      opacity: [0, 1, 0]
                     }}
                     transition={{
-                      duration: 2.5,
+                      duration: 2,
                       repeat: Infinity,
-                      delay: i * 0.5,
-                      ease: 'easeInOut',
+                      delay: i * 0.25
                     }}
-                  >
-                    <Icon size={16} className="text-bullish group-hover:scale-110 transition-transform" />
+                  />
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Typography */}
+            <div className="text-center space-y-3">
+              <h1 className="text-5xl font-black text-white uppercase tracking-tighter italic">
+                Poly<span className="text-bullish">Pulse</span>
+              </h1>
+              <p className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em] border-t border-white/5 pt-2">
+                The Architecture of Prediction
+              </p>
+            </div>
+
+            {/* Loading & Status Block */}
+            <div className="w-64 space-y-4">
+              <div className="relative h-px w-full bg-white/10 overflow-hidden">
+                <motion.div
+                  className="absolute inset-y-0 left-0 bg-bullish"
+                  initial={{ width: '0%' }}
+                  animate={{ width: `${progress}%` }}
+                />
+                <motion.div
+                  className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                  animate={{ x: ['-100%', '400%'] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                />
+              </div>
+
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex items-center gap-2">
+                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
+                    <Zap size={10} className="text-bullish" />
                   </motion.div>
-                  <span className="text-[9px] sm:text-[10px] text-text-secondary font-medium uppercase tracking-wider">
-                    {label}
+                  <span className="text-[10px] text-neutral-400 font-mono uppercase tracking-widest leading-none">
+                    {statusText}
                   </span>
-                </motion.div>
+                </div>
+                <span className="text-[8px] text-bullish font-mono">{progress}%</span>
+              </div>
+            </div>
+
+            {/* Utility Showcase */}
+            <div className="flex items-center gap-8 mt-4">
+              {[
+                { Icon: TrendingUp, label: 'TRENDING' },
+                { Icon: Activity, label: 'LIVE' },
+                { Icon: BarChart3, label: 'ANALYTICS' },
+              ].map(({ Icon, label }, i) => (
+                <div key={i} className="flex flex-col items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-500 hover:text-bullish hover:border-bullish/50 transition-all duration-300">
+                    <Icon size={18} />
+                  </div>
+                  <span className="text-[8px] text-neutral-600 font-bold tracking-widest">{label}</span>
+                </div>
               ))}
-            </motion.div>
+            </div>
           </motion.div>
         </motion.div>
       )}

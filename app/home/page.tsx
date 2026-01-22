@@ -4,7 +4,7 @@ import { FullScreenScrollFX } from "@/components/ui/full-screen-scroll-fx";
 import { Activity, Zap, Shield, ChevronRight, Github, Twitter, Send } from "lucide-react";
 import Link from "next/link";
 import { HeroScrollDemo } from "@/components/ui/hero-scroll-demo";
-import { TimelineDemo } from "@/components/ui/timeline-demo";
+import { Roadmap } from "@/components/home/Roadmap";
 import { motion } from "framer-motion";
 import React, { useRef, useState } from "react";
 import BackgroundParticles from "@/components/visualizations/BackgroundParticles";
@@ -121,21 +121,21 @@ const ContentSection = () => (
                     transition={{ duration: 0.8, ease: "easeOut" }}
                 >
                     <h2 className="text-5xl md:text-7xl font-black mb-8 leading-[0.9] tracking-tighter uppercase relative">
-                        <span className="block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/50">Master The</span>
-                        <span className="block text-bullish">Market</span>
-                        <span className="block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/50">Intelligence</span>
+                        <span className="block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/50">THE NEW</span>
+                        <span className="block text-bullish">ARCHITECTURE</span>
+                        <span className="block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/50">OF PREDICTION</span>
                     </h2>
                     <p className="text-xl text-neutral-400 mb-10 leading-relaxed max-w-lg uppercase tracking-wide border-l-2 border-bullish/50 pl-6">
-                        PolyPulse provides deep insights into prediction markets, enabling strategic decision-making through advanced AI-driven analytics.
+                        PolyPulse synchronizes high-frequency data from Polymarket with the ultra-fast execution of the Solana ecosystem. We bridge the gap between raw information and strategic action.
                     </p>
                     <div className="flex flex-wrap gap-4">
                         <Link href="/markets" className="group relative px-8 py-4 bg-bullish hover:bg-bullish-hover text-white font-bold rounded-full transition-all uppercase tracking-widest text-sm flex items-center gap-2 overflow-hidden">
                             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                            <span className="relative">Explore Markets</span>
+                            <span className="relative">LAUNCH APP</span>
                             <ChevronRight size={18} className="relative group-hover:translate-x-1 transition-transform" />
                         </Link>
                         <Link href="/docs" className="group px-8 py-4 bg-transparent border border-white/10 hover:border-white/30 text-white font-bold rounded-full transition-all uppercase tracking-widest text-sm">
-                            <span className="group-hover:text-bullish transition-colors">Read Docs</span>
+                            <span className="group-hover:text-bullish transition-colors">DOCUMENTATION</span>
                         </Link>
                     </div>
 
@@ -154,10 +154,10 @@ const ContentSection = () => (
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
-                        { icon: Activity, title: "Spread Analysis", desc: "Monitor market inefficiencies in real-time with millisecond precision." },
-                        { icon: Zap, title: "Instant Execution", desc: "Proprietary signals for optimized entry and exit on Polymarket." },
-                        { icon: Shield, title: "Risk Mitigation", desc: "Advanced algorithmic hedging tools to protect your trading capital." },
-                        { icon: Zap, title: "AI Strategy", desc: "LLM-powered research briefs generated from live market sentiment." }
+                        { icon: Activity, title: "DATA STREAM", desc: "Real-time telemetry from Gamma and CLOB APIs. Zero-latency market discovery." },
+                        { icon: Zap, title: "LOGIC LAYER", desc: "Autonomous AI research briefs powered by Google Gemini. Strategic clarity on demand." },
+                        { icon: Zap, title: "SOLANA CORE", desc: "Engineered for the Solana ecosystem. Built for speed, scale, and future on-chain integration." },
+                        { icon: Shield, title: "PROTOCOL DOCS", desc: "Comprehensive guides on market inefficiencies, arbitrage logic, and system architecture." }
                     ].map((feature, i) => (
                         <motion.div
                             key={i}
@@ -167,9 +167,24 @@ const ContentSection = () => (
                             transition={{ duration: 0.5, delay: i * 0.1 }}
                         >
                             <SpotlightCard className="h-full p-8 group hover:bg-neutral-900/80 transition-colors">
-                                <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-6 text-bullish group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                                <motion.div
+                                    className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-6 text-bullish group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
+                                    animate={{
+                                        boxShadow: [
+                                            "0 0 0px rgba(37, 99, 235, 0)",
+                                            "0 0 20px rgba(37, 99, 235, 0.4)",
+                                            "0 0 0px rgba(37, 99, 235, 0)"
+                                        ]
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut",
+                                        delay: i * 0.4
+                                    }}
+                                >
                                     <feature.icon size={24} />
-                                </div>
+                                </motion.div>
                                 <h4 className="text-xl font-bold mb-3 uppercase tracking-tight text-white group-hover:text-bullish transition-colors">
                                     {feature.title}
                                 </h4>
@@ -203,7 +218,7 @@ export default function HomePage() {
 
             <HeroScrollDemo />
             <ContentSection />
-            <TimelineDemo />
+            <Roadmap />
         </div>
     );
 }

@@ -21,7 +21,7 @@ export function Footer() {
 
 
   return (
-    <footer className="border-t border-border bg-surface/30 backdrop-blur-sm mt-auto">
+    <footer className="border-t border-border bg-background/80 backdrop-blur-lg mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12 mb-10 lg:mb-12">
@@ -40,11 +40,8 @@ export function Footer() {
               scan for inefficiencies, and generate AI-powered insights.
             </p>
             <div className="flex items-center gap-2 pt-1">
-              <Badge variant="live" size="sm" className="text-xs">
-                LIVE
-              </Badge>
-              <Badge variant="default" size="sm" className="text-xs font-mono">
-                #nexhacks
+              <Badge variant="default" size="sm" className="text-xs font-mono bg-bullish/10 text-bullish border-bullish/20">
+                Solana
               </Badge>
             </div>
           </div>
@@ -146,13 +143,13 @@ export function Footer() {
         </div>
 
         {/* Divider Line */}
-        <div className="border-t border-border/50 pt-8 pb-8">
+        <div className="border-t border-bullish/30 pt-8 pb-8">
           {/* Copyright & Social Icons */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-8">
             {/* Copyright */}
-            <div className="text-xs sm:text-sm text-text-secondary">
-              <p className="font-medium">
-                © {currentYear} PolyPulse · Built for NexHacks 2026
+            <div className="text-xs sm:text-sm text-bullish font-medium">
+              <p>
+                © {currentYear} PolyPulse · All rights reserved.
               </p>
             </div>
 
