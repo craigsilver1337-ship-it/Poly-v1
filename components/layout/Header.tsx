@@ -104,7 +104,7 @@ export function Header() {
               // Show Sign Up/Sign In only when not authenticated and not guest
               <div className="flex items-center gap-2">
                 <Button
-                  variant="primary"
+                  variant="default"
                   size="sm"
                   onClick={() => {
                     setAuthModalTab('signup');
@@ -215,7 +215,7 @@ export function Header() {
               {showAuthButtons && (
                 <div className="px-4 py-3 space-y-2 border-b border-border mb-2">
                   <Button
-                    variant="primary"
+                    variant="default"
                     size="sm"
                     onClick={() => {
                       setAuthModalTab('signup');
